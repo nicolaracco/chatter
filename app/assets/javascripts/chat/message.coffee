@@ -2,11 +2,11 @@
 
 templates =
   message: """
-    <p class="<%= type %>">
-      <span class="time"><%= time_id %></span>
-      <span class="user"><%= username %></span>
-      <span class="message"><%= message %></span>
-    </p>
+    <div class="<%= type %>">
+      <section class="time"><%= time_id %></section>
+      <section class="user"><%= username %></section>
+      <section class="message"><%= message %></section>
+    </div>
   """
 class Chat.Message
   constructor: (data) ->

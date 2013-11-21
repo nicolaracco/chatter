@@ -67,4 +67,4 @@ Now you can start the server with: `coffee app.coffee`
 - Transcript
 - Admin panel for user management
 - Room deletion
-- Room unsubscription
+- Private messages

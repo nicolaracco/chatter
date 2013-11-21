@@ -48,7 +48,12 @@ class SocketIOController
       @save_message message_attrs, (message) =>
         @io.sockets.in("room-#{id}").emit 'users:joined', message.to_json()
         @socket.join "room-#{id}"
-        @find_messages_and_render room
+        @find_room_messages room, (messages) =>
+          messages = (m.to_json() for m in _(messages).reverse())
+          @socket.emit 'rooms:joined',
+            room    : room.to_json()
+            messages: messages
+            users   : @user_names_in("room-#{room.id}")
 
   on_room_unsubscription: (id) =>
     if @rooms_ids().indexOf(id) >= 0
@@ -65,7 +70,7 @@ class SocketIOController
     message = new models.Message at: new Date, username: @username, message: data.message, _room: data.room_id, type: data.type
     message.save (err) =>
       if err?
-        @send_error 'Cannot send message', err
+        @send_error 'Cannot send message', err, data.room_id
       else
         success message
 
@@ -77,17 +82,16 @@ class SocketIOController
         @send_error 'Cannot find room', err
 
   # it gets the last 20 messages of a room and send all room informations to the user
-  find_messages_and_render: (room) =>
+  find_room_messages: (room, success) =>
     models.Message
       .find(_room: room.id)
       .sort(at: -1)
       .limit(20)
       .exec (err, messages) =>
-        messages = (m.to_json() for m in _(messages).reverse())
-        @socket.emit 'rooms:joined',
-          room    : room.to_json()
-          messages: messages
-          users   : @user_names_in("room-#{room.id}")
+        if err?
+          @send_error 'Cannot fetch latest messages', err, room.id
+        else
+          success messages
 
   # list the users subscribed in a certain room
   user_names_in: (id) =>
@@ -98,9 +102,12 @@ class SocketIOController
     rooms_ids = @io.sockets.manager.roomClients[@socket.id]
     (id.split('-')[1] for id, val of rooms_ids when id.charAt(0) is '/')
 
-  send_error: (message, err) =>
+  send_error: (message, err, room_id) =>
     message = if err? then "#{message}: #{err}" else message
-    @socket.emit 'generic_error', message
+    if room_id?
+      @socket.emit 'rooms:error', room: room_id, message: message
+    else
+      @socket.emit 'generic_error', message
 
   @setup: (server) ->
     server.io.on 'connection', (socket) ->

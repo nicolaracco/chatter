@@ -50,24 +50,24 @@ dehighlight-color = #999999
     padding-bottom: 5px
     display: table
 
-    p
+    div
       display: table-row
 
       &.message
-        span.user:after
+        .user:after
           content: ':'
 
       &.day_header
-        span.message
+        .message
           font-size: large
           color    : dehighlight-color
 
       &.joined, &.left
-        span:not(.time)
+        :not(.time)
           color: dehighlight-color
           font-style: italic
 
-      span
+      section
         display: table-cell
         padding-left: 10px
 

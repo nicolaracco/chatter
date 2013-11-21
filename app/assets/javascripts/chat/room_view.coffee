@@ -4,11 +4,18 @@
 
 templates =
   header: """
-    <p class="day_header">
-      <span class="time"></span>
-      <span class="user"></span>
-      <span class="message"><%= msg %></span>
-    </p>
+    <div class="day_header">
+      <section class="time"></section>
+      <section class="user"></section>
+      <section class="message"><%= msg %></section>
+    </div>
+  """
+  error: """
+    <div class="error">
+      <section class="time"></section>
+      <section class="user"></section>
+      <section class="message"><div class="alert alert-warning"><%= msg %></div></section>
+    </div>
   """
   user_entry: """
     <li class="list-group-item" data-user="<%= id %>">
@@ -61,6 +68,10 @@ class Chat.RoomView
     message.style_respect_to_previous @last_received_message if @last_received_message?
     @last_received_message = message
     @get_output_wrapper().append message.el
+    @scroll_to_bottom() if @scroll_locked
+
+  append_error: (data) =>
+    @get_output_wrapper().append _(templates.error).template msg: data.message
     @scroll_to_bottom() if @scroll_locked
 
   user_joined: (data) =>

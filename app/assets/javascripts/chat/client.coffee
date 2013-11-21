@@ -36,6 +36,7 @@ class Chat.Client
     @socket.on 'rooms:created', @room_chooser.append_room
     @socket.on 'rooms:joined',  @on_room_joined
     @socket.on 'rooms:message', @on_room_message
+    @socket.on 'rooms:error',   @on_room_error
     @socket.on 'users:joined',  @on_user_joined
     @socket.on 'users:left',    @on_user_left
     @socket.on 'generic_error', @show_error
@@ -66,6 +67,9 @@ class Chat.Client
 
   on_room_message: (data) =>
     @rooms_views[data.room].append data
+
+  on_room_error: (data) =>
+    @rooms_views[data.room].append_error data
 
   on_user_joined: (data) =>
     @rooms_views[data.room].user_joined data
