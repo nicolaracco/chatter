@@ -1,54 +1,42 @@
+#= require message
+
 @Chat ?= {}
 
-class Message
-  constructor: (@data) ->
-    @data.at     = new Date @data.at
-    @data.type  ?= 'message'
-    @day_id      = moment(@data.at).format 'YYYYMMDD'
-    @date_header = moment(@data.at).format("dddd, MMMM Do YYYY")
-    @time_id     = moment(@data.at).format 'HH:mm'
-    @username    = @data.user
-    @create_element()
-
-  get_message: =>
-    if @data.type is 'joined'
-      'joined this room'
-    else if @data.type is 'left'
-      'left this room'
-    else
-      @data.message
-
-  create_element: =>
-    @el = $ """
-      <p class="#{@data.type}">
-        <span class="time">#{@time_id}</span>
-        <span class="user">#{@username}</span>
-        <span class="message">#{@get_message()}</span>
-      </p>
-    """
-
-  style_respect_to_previous: (previous) =>
-    if previous.time_id is @time_id
-      @el.find('.time').text('')
-      if @data.type is previous.data.type and previous.username is @username
-        @el.find('.user').text('')
-        @el.addClass @same_color_respect_to previous
-      else
-        @el.addClass @inverse_color_respect_to previous
-    else
-      @el.addClass @inverse_color_respect_to previous
-
-  inverse_color_respect_to: (previous) =>
-    if previous.el.hasClass 'darken'
-      'lighten'
-    else
-      'darken'
-
-  same_color_respect_to: (previous) =>
-    if previous.el.hasClass 'darken'
-      'darken'
-    else
-      'lighten'
+templates =
+  header: """
+    <p class="day_header">
+      <span class="time"></span>
+      <span class="user"></span>
+      <span class="message"><%= msg %></span>
+    </p>
+  """
+  user_entry: """
+    <li class="list-group-item" data-user="<%= id %>">
+      <span class="glyphicon glyphicon-user"></span>
+      <%= name %>
+    </li>
+  """
+  tab_link: """
+    <li data-room="<%= id %>">
+      <a id="room-link-<%= id %>" href="#room-<%= id %>" data-toggle="tab">
+        <span class="glyphicon glyphicon-bullhorn"></span>
+        <%= name %>
+        <button type="button" class="close close-tab" aria-hidden="true">&times;</button>
+      </a>
+    </li>
+  """
+  tab_pane: """
+    <div id="room-<%= id %>" data-room="<%= id %>" class="tab-pane">
+      <div class="row">
+        <div class="room-output col-md-10">
+          <div class="wrapper"></div>
+        </div>
+        <div class="users-list col-md-2">
+          <ul class="list-group"></ul>
+        </div>
+      </div>
+    </div>
+  """
 
 class Chat.RoomView
   callbacks: {}
@@ -67,15 +55,9 @@ class Chat.RoomView
   on_close: (callback) => @callbacks.close = callback
 
   append: (data) =>
-    message = new Message data
+    message = new Chat.Message data
     if message.day_id isnt @last_received_message?.day_id
-      @get_output_wrapper().append """
-        <p class="day_header">
-          <span class="time"></span>
-          <span class="user"></span>
-          <span class="message">#{message.date_header}</span>
-        </p>
-      """
+      @get_output_wrapper().append _(templates.header).template msg: message.date_header
     message.style_respect_to_previous @last_received_message if @last_received_message?
     @last_received_message = message
     @get_output_wrapper().append message.el
@@ -89,13 +71,7 @@ class Chat.RoomView
     @get_users_list().find("li[data-user='#{data.user}']").remove()
     @append data
 
-  user_template: (user) =>
-    """
-      <li class="list-group-item" data-user="#{user}">
-        <span class="glyphicon glyphicon-user"></span>
-        #{user}
-      </li>
-    """
+  user_template: (user) => _(templates.user_entry).template id: user, name: user
 
   activate: =>
     @link_el.tab 'show'
@@ -121,31 +97,12 @@ class Chat.RoomView
     @el.find('.users-list ul')
 
   create_link_element: =>
-    list_item_el = $ """
-      <li data-room="#{@id}">
-        <a id="room-link-#{@id}" href="#room-#{@id}" data-toggle="tab">
-          <span class="glyphicon glyphicon-bullhorn"></span>
-          #{@name}
-          <button type="button" class="close close-tab" aria-hidden="true">&times;</button>
-        </a>
-      </li>
-    """
+    list_item_el = $ _(templates.tab_link).template id: @id, name: @name
     $('#rooms_list').append list_item_el
-    @link_el = $("#room-link-#{@id}")
+    @link_el = list_item_el.children 'a'
 
   create_element: =>
-    @el = $ """
-      <div id="room-#{@id}" data-room="#{@id}" class="tab-pane">
-        <div class="row">
-          <div class="room-output col-md-10">
-            <div class="wrapper"></div>
-          </div>
-          <div class="users-list col-md-2">
-            <ul class="list-group"></ul>
-          </div>
-        </div>
-      </div>
-    """
+    @el = $ _(templates.tab_pane).template id: @id
     $('.tab-content').append @el
 
   bind_events: =>
