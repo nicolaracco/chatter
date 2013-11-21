@@ -1,0 +1,31 @@
+#chat.container
+  ul#rooms_list.nav.nav-tabs
+    li.active
+      a(href="#rooms" data-toggle="tab") Rooms
+  .tab-content
+    #rooms.tab-pane.active
+      .row
+        #rooms-content.col-md-4.col-md-offset-4
+          ul.nav.nav-pills.nav-stacked.text-center
+            - for room in rooms
+              li.room
+                a(href="#" data-room=room.id)= room.name
+            li
+              button.btn.btn-primary.btn-lg(type="button" data-toggle="modal" data-target="#create-room-modal") Create Room
+  nav#input-navbar.navbar.navbar-fixed-bottom.navbar-default.hide
+    input#send-input(type="text")
+
+#create-room-modal.modal.fade(role="dialog" aria-labelledby="Create Room" aria-hidden="true")
+  .modal-dialog
+    .modal-content
+      .modal-header
+        button.close(type="button" data-dismiss="modal" aria-hidden="true") &times;
+        h4.modal-title Create Room
+      form(role="form")
+        .modal-body
+          .form-group
+            label(for="room-name-input") Name
+            input#room-name-input.form-control(type="text" placeholder="Foo Bar Baz" name="name" required="true")
+        .modal-footer
+          button.btn.btn-default(type="button" data-dismiss="modal") Close
+          button.btn.btn-primary(type="submit") Save changes

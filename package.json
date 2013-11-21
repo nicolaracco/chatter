@@ -1,0 +1,27 @@
+{
+  "name": "chatter",
+  "description": "chat application with login and room management",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "coffee-script"    : "1.6.x",
+    "underscore"       : "1.5.x",
+    "glob"             : "3.2.x",
+    "nconf"            : "0.6.x",
+    "express"          : "3.x",
+    "express-partials" : "0.1.x",
+    "jade"             : "0.35.x",
+    "bundle-up"        : "0.3.x",
+    "less"             : "1.5.x",
+    "ejs"              : "0.8.x",
+    "passport"         : "0.1.x",
+    "passport-local"   : "0.1.x",
+    "connect-flash"    : "0.1.x",
+    "mongoose"         : "3.8.x",
+    "bcrypt"           : "0.7.x",
+    "socket.io"        : "0.9.x",
+    "connect-redis"    : "1.4.x",
+    "passport.socketio": "2.1.x",
+    "commander"        : "2.0.x"
+  }
+}

@@ -1,0 +1,20 @@
+.container {
+  width: 100%;
+}
+
+.tab-pane {
+  padding-top: 20px;
+}
+
+#rooms-content button {
+  width: 100%;
+}
+
+#send-input {
+  width: calc(100% - 30px);
+  margin: 12px 15px;
+}
+
+.room-output, .users-list {
+  overflow-y: scroll;
+}
