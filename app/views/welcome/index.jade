@@ -1,7 +1,7 @@
 #chat.container
   ul#rooms_list.nav.nav-tabs
     li.active
-      a(href="#room-chooser" data-toggle="tab")
+      a#room-chooser-link(href="#room-chooser" data-toggle="tab")
         span.glyphicon.glyphicon-home
         span Rooms
   .tab-content
@@ -14,6 +14,3 @@
             span.input-group-addon
               span.glyphicon.glyphicon-comment
             input#send-input.form-control(type="text" required="true" placeholder="Say something ...")
-  //-   form(role="form")
-  //-     span.glyphicon.glyphicon-comment
-  //-     input#send-input(type="text" required="true")

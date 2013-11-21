@@ -51,16 +51,20 @@ class Message
       'lighten'
 
 class Chat.RoomView
+  callbacks: {}
   scroll_locked: true
   last_received_message: null
 
-  constructor: (@room, messages, users) ->
+  constructor: (room, messages, users) ->
+    [@id, @name] = [room.id, room.name]
+    @create_link_element()
     @create_element()
-    @el = $("#room-#{@room.id}")
     for message in messages
       @append message
     @get_users_list().append (@user_template user for user in users).join ''
     @bind_events()
+
+  on_close: (callback) => @callbacks.close = callback
 
   append: (data) =>
     message = new Message data
@@ -94,10 +98,10 @@ class Chat.RoomView
     """
 
   activate: =>
-    $("#room-link-#{@room.id}").tab 'show'
+    @link_el.tab 'show'
 
   is_active: =>
-    $("#room-link-#{@room.id}").parent().is '.active'
+    @link_el.parent().is '.active'
 
   update_size: =>
     @get_output().add(@get_users_list_container()).css
@@ -116,17 +120,22 @@ class Chat.RoomView
   get_users_list: =>
     @el.find('.users-list ul')
 
-  create_element: =>
-    $('#rooms_list').append """
-      <li>
-        <a id="room-link-#{@room.id}" data-room="#{@room.id}" href="#room-#{@room.id}" data-toggle="tab">
+  create_link_element: =>
+    list_item_el = $ """
+      <li data-room="#{@id}">
+        <a id="room-link-#{@id}" href="#room-#{@id}" data-toggle="tab">
           <span class="glyphicon glyphicon-bullhorn"></span>
-          #{@room.name}
+          #{@name}
+          <button type="button" class="close close-tab" aria-hidden="true">&times;</button>
         </a>
       </li>
     """
-    $('.tab-content').append """
-      <div id="room-#{@room.id}" data-room="#{@room.id}" class="tab-pane">
+    $('#rooms_list').append list_item_el
+    @link_el = $("#room-link-#{@id}")
+
+  create_element: =>
+    @el = $ """
+      <div id="room-#{@id}" data-room="#{@id}" class="tab-pane">
         <div class="row">
           <div class="room-output col-md-10">
             <div class="wrapper"></div>
@@ -137,10 +146,16 @@ class Chat.RoomView
         </div>
       </div>
     """
+    $('.tab-content').append @el
 
   bind_events: =>
     $(window).resize @update_size
     @get_output().scroll @on_output_scrolled
+    @link_el.find('.close-tab').click (e) =>
+      e.preventDefault()
+      @link_el.remove()
+      @el.remove()
+      @callbacks.close? @
 
   on_output_scrolled: =>
     output = @get_output()

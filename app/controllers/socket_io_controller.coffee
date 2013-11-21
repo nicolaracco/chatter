@@ -9,10 +9,11 @@ class SocketIOController
     @bind_events()
 
   bind_events: =>
-    @socket.on 'create_room',     @on_create_room
-    @socket.on 'rooms:subscribe', @on_room_subscription
-    @socket.on 'rooms:message',   @on_room_message
-    @socket.on 'disconnect',      @on_disconnection
+    @socket.on 'create_room',       @on_create_room
+    @socket.on 'rooms:subscribe',   @on_room_subscription
+    @socket.on 'rooms:unsubscribe', @on_room_unsubscription
+    @socket.on 'rooms:message',     @on_room_message
+    @socket.on 'disconnect',        @on_disconnection
 
   # when a user disconnects we notify all users subscribed to the same room
   # of the event
@@ -48,6 +49,15 @@ class SocketIOController
         @io.sockets.in("room-#{id}").emit 'users:joined', message.to_json()
         @socket.join "room-#{id}"
         @find_messages_and_render room
+
+  on_room_unsubscription: (id) =>
+    if @rooms_ids().indexOf(id) >= 0
+      @socket.leave "room-#{id}"
+      message_attrs = type: 'left', message: 'left', room_id: id
+      @save_message message_attrs, (message) =>
+        @io.sockets.in("room-#{id}").emit 'users:left', message.to_json()
+    else
+      @send_error 'You are not subscribed to this room'
 
   # shortand function to save a message with the current user as subject
   # and execute a success callback

@@ -10,7 +10,7 @@ class Chat.Client
 
   constructor: ->
     @socket = io.connect 'http://localhost'
-    @rooms_view = new Chat.RoomChooser $('#room-chooser')
+    @room_chooser = new Chat.RoomChooser $('#room-chooser-link'), $('#room-chooser')
     @input_widget = new Chat.InputWidget
     @bind_events()
 
@@ -29,11 +29,11 @@ class Chat.Client
     (room for id, room of @rooms_views when room.is_active())[0]
 
   bind_events: ->
-    @rooms_view.on_create_room (name) =>
+    @room_chooser.on_create_room (name) =>
       @socket.emit 'create_room', name
-    @rooms_view.on_join_room (id) =>
+    @room_chooser.on_join_room (id) =>
       @socket.emit 'rooms:subscribe', id
-    @socket.on 'rooms:created', @rooms_view.append_room
+    @socket.on 'rooms:created', @room_chooser.append_room
     @socket.on 'rooms:joined',  @on_room_joined
     @socket.on 'rooms:message', @on_room_message
     @socket.on 'users:joined',  @on_user_joined
@@ -42,14 +42,24 @@ class Chat.Client
     $('#rooms_list').on 'shown.bs.tab', 'a[data-toggle="tab"]', @on_tab_shown
     @input_widget.on_message @send_message_to_active_room
 
+  leave_room: (room) =>
+    @rooms_views = _(@rooms_views).omit room.id
+    prev_room = _(@rooms_views).values()[0]
+    if prev_room?
+      prev_room.activate()
+    else
+      @room_chooser.activate()
+    @socket.emit 'rooms:unsubscribe', room.id
+
   send_message_to_active_room: (msg) =>
-    room_id = @active_room().room.id
+    room_id = @active_room().id
     @socket.emit 'rooms:message', room: room_id, message: msg
 
   on_tab_shown: (e) =>
-    if $(e.target).attr('id')?
+    li = $(e.target).parent()
+    if li.attr('data-room')
       @input_widget.show()
-      room_id = $(e.target).data('room')
+      room_id = $(e.target).parent().data('room')
       @rooms_views[room_id].update_size()
     else
       @input_widget.hide()
@@ -64,6 +74,8 @@ class Chat.Client
     @rooms_views[data.room].user_left data
 
   on_room_joined: (data) =>
-    @rooms_views[data.room.id] ?= new Chat.RoomView(data.room, data.messages, data.users)
+    unless @rooms_views[data.room.id]?
+      @rooms_views[data.room.id] = new Chat.RoomView(data.room, data.messages, data.users)
+      @rooms_views[data.room.id].on_close @leave_room
     @rooms_views[data.room.id].scroll_locked = true
     @rooms_views[data.room.id].activate()

@@ -3,8 +3,11 @@
 class Chat.RoomChooser
   callbacks: {}
 
-  constructor: (@el) ->
+  constructor: (@link_el, @el) ->
     @bind_events()
+
+  activate: =>
+    @link_el.tab 'show'
 
   get_rooms_list: => @el.find('ul.nav').first()
 
