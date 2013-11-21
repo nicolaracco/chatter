@@ -20,7 +20,9 @@ class SocketIOController
   # of the event
   on_disconnection: =>
     for id in @rooms_ids()
-      @io.sockets.in("room-#{id}").emit 'users:left', room: id, at: new Date, user: @user.email
+      message_attrs = type: 'left', message: 'left', room_id: id
+      @save_message message_attrs, (message) =>
+        @io.sockets.in("room-#{id}").emit 'users:left', @message_handle(message)
 
   # returns the ids of all the subscribed rooms
   rooms_ids: =>
@@ -32,23 +34,11 @@ class SocketIOController
   on_room_message: (data) =>
     models.Room.findOne _id: data.room, (err, room) =>
       if room
-        @save_and_echo_message room, data
+        message_attrs = type: 'talk', message: data.message, room_id: data.room
+        @save_message message_attrs, (message) =>
+          @io.sockets.in("room-#{room.id}").emit 'rooms:message', @message_handle(message)
       else
         @socket.emit 'generic_error', 'Cannot find room'
-
-  # save a message for a certain room and notify both the user and the
-  # other users subscribed to the same room
-  save_and_echo_message: (room, data) =>
-    message = new models.Message at: new Date, username: @user.email, message: data.message, _room: room._id
-    message.save (err) =>
-      if err?
-        @socket.emit 'generic_error', "Cannot send message: #{err}"
-      else
-        @io.sockets.in("room-#{room.id}").emit 'rooms:message',
-          room   : room.id
-          user   : @user.email
-          message: data.message
-          at     : message.at
 
   # when a user creates a room, it notifies all users of the new room
   on_create_room: (name) =>
@@ -67,26 +57,45 @@ class SocketIOController
   on_room_subscription: (id) =>
     models.Room.findOne _id: id, (err, room) =>
       if room
-        @io.sockets.in("room-#{id}").emit 'users:joined', room: id, at: new Date, user: @user.email
-        @socket.join "room-#{id}"
-        @find_messages_and_render room
+        message_attrs = type: 'joined', message: 'joined', room_id: id
+        @save_message message_attrs, (message) =>
+          @io.sockets.in("room-#{id}").emit 'users:joined', @message_handle(message)
+          @socket.join "room-#{id}"
+          @find_messages_and_render room
       else
         @socket.emit 'generic_error', 'Cannot find room'
+
+  # shortand function to save a message with the current user as subject
+  # and execute a success callback
+  save_message: (data, success) =>
+    message = new models.Message at: new Date, username: @user.email, message: data.message, _room: data.room_id, type: data.type
+    message.save (err) =>
+      if err?
+        @socket.emit 'generic_error', "Cannot send message: #{err}"
+      else
+        success message
 
   # it gets the last 20 messages of a room and send all room informations to the user
   find_messages_and_render: (room) =>
     models.Message
       .find(_room: room.id)
-      .sort(at: 1)
+      .sort(at: -1)
       .limit(20)
       .exec (err, messages) =>
-        messages = (for m in messages
-          { at: m.at, user: m.username, message: m.message }
-        )
+        messages = (@message_handle(m) for m in _(messages).reverse())
         @socket.emit 'rooms:joined',
           room: { id: room.id, name: room.name }
           messages: messages
           users: @user_names_in("room-#{room.id}")
+
+  message_handle: (message) ->
+    {
+      at     : message.at,
+      user   : message.username,
+      message: message.message,
+      type   : message.type,
+      room   : message._room
+    }
 
   # list the users subscribed in a certain room
   user_names_in: (id) =>

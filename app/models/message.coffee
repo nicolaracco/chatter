@@ -14,5 +14,8 @@ schema = Schema
   message:
     type    : String
     required: true
+  type:
+    type    : String
+    required: true
 
 module.exports = schema

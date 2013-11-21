@@ -13,7 +13,6 @@ class Chat.RoomView
     @bind_events()
 
   append: (data) =>
-    console.dir data.at
     day_id = @format_date_id(data.at)
     if day_id isnt @last_received_day_id
       @get_output_wrapper().append """
@@ -24,8 +23,12 @@ class Chat.RoomView
         </p>
       """
       @last_received_day_id = day_id
+    if data.type is 'joined'
+      data.message = 'joined this room'
+    else if data.type is 'left'
+      data.message = 'left this room'
     @get_output_wrapper().append """
-      <p class="message">
+      <p class="#{data.type ? 'message'}">
         <span class="time">#{@format_date data.at}</span>
         <span class="user">#{data.user}</span>
         <span class="message">#{data.message}</span>
@@ -35,23 +38,11 @@ class Chat.RoomView
 
   user_joined: (data) =>
     @get_users_list().append @user_template data.user
-    @get_output_wrapper().append """
-      <p class="joined">
-        <span class="time">#{@format_date data.at}</span>
-        <span class="user">#{data.user}</span>
-        <span class="message">joined the room</span>
-      </p>
-    """
+    @append data
 
   user_left: (data) =>
     @get_users_list().find("li[data-user='#{data.user}']").remove()
-    @get_output_wrapper().append """
-      <p class="left">
-        <span class="time">#{@format_date data.at}</span>
-        <span class="user">#{data.user}</span>
-        <span class="message">left the room</span>
-      </p>
-    """
+    @append data
 
   user_template: (user) =>
     """
