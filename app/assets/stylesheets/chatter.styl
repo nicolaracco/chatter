@@ -4,6 +4,11 @@
 border-color = #dddddd
 dehighlight-color = #999999
 
+.lighten
+  background-color: #fff
+.darken
+  background-color: #f9f9f9
+
 .container
   width: 100%
 
@@ -19,9 +24,17 @@ dehighlight-color = #999999
 
 .room-output
   overflow-y: scroll
+  padding-right: 0
+  border-right: 1px solid border-color
+
+  &::-webkit-scrollbar {
+    width: 0px;
+    height: 10px;
+  }
 
   .wrapper
     min-height: 100%
+    width: 100%
     border-left: 1px solid border-color
     padding-top: 10px
     padding-bottom: 5px
@@ -29,13 +42,6 @@ dehighlight-color = #999999
 
     p
       display: table-row
-
-      span
-        display: table-cell
-        padding-left: 10px
-        &.time
-          padding-right: 10px
-          border-right: 1px solid border-color
 
       &.message
         span.user:after
@@ -51,7 +57,20 @@ dehighlight-color = #999999
           color: dehighlight-color
           font-style: italic
 
+      span
+        display: table-cell
+        padding-left: 10px
+
+        &.time
+          @extend .lighten
+          padding-right: 10px
+          border-right: 1px solid border-color
+          width: 2em
+        &.user
+          width: 6em
+
 .users-list
+  padding-left: 0
   overflow-y: scroll
 
   ul.list-group
@@ -65,3 +84,8 @@ dehighlight-color = #999999
       border-right: 0
       border-top  : 0
       border-radius: 0
+
+      &:nth-child(odd)
+        @extend .lighten
+      &:nth-child(even)
+        @extend .darken

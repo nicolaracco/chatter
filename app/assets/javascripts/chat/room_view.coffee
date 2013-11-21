@@ -1,9 +1,51 @@
 @Chat ?= {}
 
+class Message
+  constructor: (@data) ->
+    @data.at     = new Date @data.at
+    @data.type  ?= 'message'
+    @day_id      = moment(@data.at).format 'YYYYMMDD'
+    @date_header = moment(@data.at).format("dddd, MMMM Do YYYY")
+    @time_id     = moment(@data.at).format 'HH:mm'
+    @username    = @data.user
+    @create_element()
+
+  get_message: =>
+    if @data.type is 'joined'
+      'joined this room'
+    else if @data.type is 'left'
+      'left this room'
+    else
+      @data.message
+
+  create_element: =>
+    @el = $ """
+      <p class="#{@data.type}">
+        <span class="time">#{@time_id}</span>
+        <span class="user">#{@username}</span>
+        <span class="message">#{@get_message()}</span>
+      </p>
+    """
+
+  style_respect_to_previous: (previous) =>
+    if previous.time_id is @time_id
+      @el.find('.time').text('')
+      if @data.type is previous.data.type and previous.username is @username
+        @el.find('.user').text('')
+      else
+        @el.addClass @inverse_color_respect_to previous
+    else
+      @el.addClass @inverse_color_respect_to previous
+
+  inverse_color_respect_to: (previous) =>
+    if previous.el.hasClass 'darken'
+      @el.addClass 'lighter'
+    else
+      @el.addClass 'darken'
+
 class Chat.RoomView
   scroll_locked: true
-  last_received_day_id: null
-  last_received_time_id: null
+  last_received_message: null
 
   constructor: (@room, messages, users) ->
     @create_element()
@@ -14,35 +56,18 @@ class Chat.RoomView
     @bind_events()
 
   append: (data) =>
-    day_id = @format_date_id(data.at)
-    time_id = @format_date data.at
-    if day_id isnt @last_received_day_id
+    message = new Message data
+    if message.day_id isnt @last_received_message?.day_id
       @get_output_wrapper().append """
         <p class="day_header">
           <span class="time"></span>
           <span class="user"></span>
-          <span class="message">#{@format_date_header data.at}</span>
+          <span class="message">#{message.date_header}</span>
         </p>
       """
-      @last_received_day_id = day_id
-
-    if data.type is 'joined'
-      data.message = 'joined this room'
-    else if data.type is 'left'
-      data.message = 'left this room'
-
-    time_to_show = if time_id is @last_received_time_id
-      ''
-    else
-      @last_received_time_id = time_id
-
-    @get_output_wrapper().append """
-      <p class="#{data.type ? 'message'}">
-        <span class="time">#{time_to_show}</span>
-        <span class="user">#{data.user}</span>
-        <span class="message">#{data.message}</span>
-      </p>
-    """
+    message.style_respect_to_previous @last_received_message if @last_received_message?
+    @last_received_message = message
+    @get_output_wrapper().append message.el
     @scroll_to_bottom() if @scroll_locked
 
   user_joined: (data) =>
@@ -112,9 +137,3 @@ class Chat.RoomView
   scroll_to_bottom: =>
     output = @get_output()
     output.scrollTop @get_output_wrapper().height() - output.height() + 15
-
-  format_date: (date) => moment(new Date date).format("HH:mm")
-
-  format_date_id: (date) => moment(new Date date).format("YYYYMMDD")
-
-  format_date_header: (date) => moment(new Date date).format("dddd, MMMM Do YYYY")
