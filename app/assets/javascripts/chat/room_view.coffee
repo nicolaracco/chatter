@@ -32,6 +32,7 @@ class Message
       @el.find('.time').text('')
       if @data.type is previous.data.type and previous.username is @username
         @el.find('.user').text('')
+        @el.addClass @same_color_respect_to previous
       else
         @el.addClass @inverse_color_respect_to previous
     else
@@ -39,9 +40,15 @@ class Message
 
   inverse_color_respect_to: (previous) =>
     if previous.el.hasClass 'darken'
-      @el.addClass 'lighter'
+      'lighten'
     else
-      @el.addClass 'darken'
+      'darken'
+
+  same_color_respect_to: (previous) =>
+    if previous.el.hasClass 'darken'
+      'darken'
+    else
+      'lighten'
 
 class Chat.RoomView
   scroll_locked: true
