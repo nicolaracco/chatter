@@ -77,7 +77,7 @@ class SocketIOController
   find_messages_and_render: (room) =>
     models.Message
       .find(_room: room.id)
-      .sort(at: 'desc')
+      .sort(at: 1)
       .limit(20)
       .exec (err, messages) =>
         messages = (for m in messages

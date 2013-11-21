@@ -111,7 +111,7 @@ class Chat.RoomView
 
   scroll_to_bottom: =>
     output = @get_output()
-    output.scrollTop @get_output_wrapper().height() - output.height()
+    output.scrollTop @get_output_wrapper().height() - output.height() + 15
 
   format_date: (date) => moment(new Date date).format("HH:mm:ss")
 
