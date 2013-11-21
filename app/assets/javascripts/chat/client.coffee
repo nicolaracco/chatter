@@ -1,3 +1,7 @@
+#= require room_chooser
+#= require room_view
+#= require input_widget
+
 @Chat ?= {}
 
 class Chat.Client
@@ -7,6 +11,7 @@ class Chat.Client
   constructor: ->
     @socket = io.connect 'http://localhost'
     @rooms_view = new Chat.RoomChooser
+    @input_widget = new Chat.InputWidget
     @bind_events()
 
   show_error: (message) ->
@@ -35,19 +40,19 @@ class Chat.Client
     @socket.on 'users:left',    @on_user_left
     @socket.on 'generic_error', @show_error
     $('#rooms_list').on 'shown.bs.tab', 'a[data-toggle="tab"]', @on_tab_shown
-    $('#send-input').keyup (e) =>
-      if e.keyCode is 13
-        e.preventDefault()
-        @socket.emit 'rooms:message', room: @active_room().room.id, message: $(e.target).val()
-        $(e.target).val ''
+    @input_widget.on_message @send_message_to_active_room
+
+  send_message_to_active_room: (msg) =>
+    room_id = @active_room().room.id
+    @socket.emit 'rooms:message', room: room_id, message: msg
 
   on_tab_shown: (e) =>
     if $(e.target).attr('id')?
-      $('#input-navbar').removeClass 'hide'
+      @input_widget.show()
       room_id = $(e.target).data('room')
       @rooms_views[room_id].update_size()
     else
-      $('#input-navbar').addClass 'hide'
+      @input_widget.hide()
 
   on_room_message: (data) =>
     @rooms_views[data.room].append data

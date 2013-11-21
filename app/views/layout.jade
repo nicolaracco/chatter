@@ -3,8 +3,6 @@ html(lang="en")
   head
     title Chatter
     != css('chatter')
-    != js('jquery-2.0.3')
-    != js('bootstrap')
     != js('chatter')
     if is_authenticated
       script(type="text/javascript" src="/socket.io/socket.io.js")
