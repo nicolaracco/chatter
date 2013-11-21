@@ -9,7 +9,6 @@
     "uri": "mongodb://localhost:27017/chatter"
   },
   "assets": {
-    "concat": false,
-    "minify": false
+    "compile": false
   }
 }
