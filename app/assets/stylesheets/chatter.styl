@@ -4,9 +4,9 @@
 border-color = #dddddd
 dehighlight-color = #999999
 
-.lighten
+.lighter
   background-color: #fff
-.darken
+.darker
   background-color: #f9f9f9
 
 .nav-tabs > li .close
@@ -48,10 +48,17 @@ dehighlight-color = #999999
     border-left: 1px solid border-color
     padding-top: 10px
     padding-bottom: 5px
-    display: table
 
-    div
+    .breadcrumb
+      margin-bottom: 0
+
+    .messages
+      display: table
+      width: 100%
+
+    article
       display: table-row
+      width: 100%
 
       &.message
         .user:after
@@ -62,7 +69,7 @@ dehighlight-color = #999999
           font-size: large
           color    : dehighlight-color
 
-      &.joined, &.left
+      &.action
         :not(.time)
           color: dehighlight-color
           font-style: italic
@@ -72,7 +79,7 @@ dehighlight-color = #999999
         padding-left: 10px
 
         &.time
-          @extend .lighten
+          @extend .lighter
           padding-right: 10px
           border-right: 1px solid border-color
           width: 2em
@@ -96,6 +103,6 @@ dehighlight-color = #999999
       border-radius: 0
 
       &:nth-child(odd)
-        @extend .lighten
+        @extend .lighter
       &:nth-child(even)
-        @extend .darken
+        @extend .darker

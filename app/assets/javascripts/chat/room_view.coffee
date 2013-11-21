@@ -1,22 +1,13 @@
-#= require message
+#= require room/message
+#= require room/action_message
+#= require room/talk_message
+#= require room/error_message
+#= require room/collection
+#= require room/message_group
 
 @Chat ?= {}
 
 templates =
-  header: """
-    <div class="day_header">
-      <section class="time"></section>
-      <section class="user"></section>
-      <section class="message"><%= msg %></section>
-    </div>
-  """
-  error: """
-    <div class="error">
-      <section class="time"></section>
-      <section class="user"></section>
-      <section class="message"><div class="alert alert-warning"><%= msg %></div></section>
-    </div>
-  """
   user_entry: """
     <li class="list-group-item" data-user="<%= id %>">
       <span class="glyphicon glyphicon-user"></span>
@@ -48,7 +39,6 @@ templates =
 class Chat.RoomView
   callbacks: {}
   scroll_locked: true
-  last_received_message: null
 
   constructor: (room, messages, users) ->
     [@id, @name] = [room.id, room.name]
@@ -62,17 +52,24 @@ class Chat.RoomView
   on_close: (callback) => @callbacks.close = callback
 
   append: (data) =>
-    message = new Chat.Message data
-    if message.day_id isnt @last_received_message?.day_id
-      @get_output_wrapper().append _(templates.header).template msg: message.date_header
-    message.style_respect_to_previous @last_received_message if @last_received_message?
-    @last_received_message = message
-    @get_output_wrapper().append message.el
+    @collection ?= new Chat.Room.Collection @get_output_wrapper()
+    message = @build_message data
+    if @collection.last()?.message_can_stay message
+      @collection.last().add message
+    else
+      group = new Chat.Room.MessageGroup message
+      @collection.add group
+      group.add message
     @scroll_to_bottom() if @scroll_locked
 
-  append_error: (data) =>
-    @get_output_wrapper().append _(templates.error).template msg: data.message
-    @scroll_to_bottom() if @scroll_locked
+  build_message: (data) =>
+    data.username = data.user
+    Klass = switch data.type
+      when 'error'  then Chat.Room.ErrorMessage
+      when 'joined' then Chat.Room.JoinMessage
+      when 'left'   then Chat.Room.LeftMessage
+      else Chat.Room.TalkMessage
+    new Klass data
 
   user_joined: (data) =>
     @get_users_list().append @user_template data.user

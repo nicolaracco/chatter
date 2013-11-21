@@ -69,7 +69,7 @@ class Chat.Client
     @rooms_views[data.room].append data
 
   on_room_error: (data) =>
-    @rooms_views[data.room].append_error data
+    @rooms_views[data.room].append _(type: 'error').extend data
 
   on_user_joined: (data) =>
     @rooms_views[data.room].user_joined data
