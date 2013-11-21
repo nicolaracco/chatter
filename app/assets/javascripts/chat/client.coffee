@@ -10,7 +10,7 @@ class Chat.Client
 
   constructor: ->
     @socket = io.connect 'http://localhost'
-    @rooms_view = new Chat.RoomChooser
+    @rooms_view = new Chat.RoomChooser $('#room-chooser')
     @input_widget = new Chat.InputWidget
     @bind_events()
 
