@@ -5,4 +5,5 @@
   .tab-content
     != partial('welcome/room_chooser', { rooms: rooms })
   nav#input-navbar.navbar.navbar-fixed-bottom.navbar-default.hide
-    input#send-input(type="text")
+    form(role="form")
+      input#send-input(type="text" required="true")
