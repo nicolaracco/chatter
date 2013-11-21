@@ -7,5 +7,13 @@
   .tab-content
     != partial('welcome/room_chooser', { rooms: rooms })
   nav#input-navbar.navbar.navbar-fixed-bottom.navbar-default.hide
-    form(role="form")
-      input#send-input(type="text" required="true")
+    .container
+      form.navbar-form.navbar-left
+        .form-group
+          .input-group
+            span.input-group-addon
+              span.glyphicon.glyphicon-comment
+            input#send-input.form-control(type="text" required="true" placeholder="Say something ...")
+  //-   form(role="form")
+  //-     span.glyphicon.glyphicon-comment
+  //-     input#send-input(type="text" required="true")

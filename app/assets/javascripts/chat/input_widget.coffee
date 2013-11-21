@@ -15,9 +15,9 @@ class Chat.InputWidget
 
   on_message: (callback) => @callbacks.message = callback
 
-  get_form: => @el.children('form').first()
+  get_form: => @el.find('form').first()
 
-  get_input_field: => @get_form().children('input').first()
+  get_input_field: => @get_form().find('input').first()
 
   bind_events: =>
     @get_form().submit (e) =>
