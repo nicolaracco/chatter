@@ -69,10 +69,9 @@ dehighlight-color = #999999
           font-size: large
           color    : dehighlight-color
 
-      &.action
-        :not(.time)
-          color: dehighlight-color
-          font-style: italic
+      &.action:not(.time)
+        color: dehighlight-color
+        font-style: italic
 
       section
         display: table-cell
@@ -83,6 +82,8 @@ dehighlight-color = #999999
           padding-right: 10px
           border-right: 1px solid border-color
           width: 2em
+          color: dehighlight-color
+          font-style: normal
         &.user
           width: 6em
 

@@ -1,9 +1,7 @@
-#= require room/message
-#= require room/action_message
-#= require room/talk_message
-#= require room/error_message
-#= require room/collection
-#= require room/message_group
+#= require room/message_model
+#= require room/messages_collection
+#= require room/day_group_model
+#= require room/day_groups_collection
 
 @Chat ?= {}
 
@@ -44,6 +42,9 @@ class Chat.RoomView
     [@id, @name] = [room.id, room.name]
     @create_link_element()
     @create_element()
+    @collection = new Chat.Room.DayGroups
+    @view = new Chat.Room.DayGroupsView collection: @collection, el: @get_output_wrapper()[0]
+
     for message in messages
       @append message
     @get_users_list().append (@user_template user for user in users).join ''
@@ -52,24 +53,14 @@ class Chat.RoomView
   on_close: (callback) => @callbacks.close = callback
 
   append: (data) =>
-    @collection ?= new Chat.Room.Collection @get_output_wrapper()
-    message = @build_message data
-    if @collection.last()?.message_can_stay message
-      @collection.last().add message
-    else
-      group = new Chat.Room.MessageGroup message
-      @collection.add group
-      group.add message
+    group_id = @collection.id_from_raw_data(data)
+    day_group = @collection.findWhere id: group_id
+    unless day_group?
+      day_group = @collection.model data
+      @collection.add day_group
+    message = day_group.messages.model data
+    day_group.messages.add message
     @scroll_to_bottom() if @scroll_locked
-
-  build_message: (data) =>
-    data.username = data.user
-    Klass = switch data.type
-      when 'error'  then Chat.Room.ErrorMessage
-      when 'joined' then Chat.Room.JoinMessage
-      when 'left'   then Chat.Room.LeftMessage
-      else Chat.Room.TalkMessage
-    new Klass data
 
   user_joined: (data) =>
     @get_users_list().append @user_template data.user
