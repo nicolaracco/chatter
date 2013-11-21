@@ -1,23 +1,62 @@
 @import "bootstrap.css";
 @import "bootstrap-theme.css";
 
-.container {
-  width: 100%;
-}
+border-color = #dddddd
+day-header-color = #999999
 
-.tab-pane {
-  padding-top: 20px;
-}
+.container
+  width: 100%
 
-#rooms-content button {
-  width: 100%;
-}
+#room-chooser
+  padding-top: 20px
 
-#send-input {
-  width: calc(100% - 30px);
-  margin: 12px 15px;
-}
+#rooms-content button
+  width: 100%
 
-.room-output, .users-list {
-  overflow-y: scroll;
-}
+#send-input
+  width: calc(100% - 30px)
+  margin: 12px 15px
+
+.room-output
+  overflow-y: scroll
+
+  .wrapper
+    min-height: 100%
+    border-left: 1px solid border-color
+    padding-top: 10px
+    padding-bottom: 5px
+    display: table
+
+    p
+      display: table-row
+
+      span
+        display: table-cell
+        padding-left: 10px
+        &.time
+          padding-right: 10px
+          border-right: 1px solid border-color
+
+      &.message
+        span.user:after
+          content: ':'
+
+      &.day_header
+        span.message
+          font-size: large
+          color    : day-header-color
+
+.users-list
+  overflow-y: scroll
+
+  ul.list-group
+    min-height: 100%
+    margin-bottom: 0
+    border-left: 1px solid border-color
+    border-right: 1px solid border-color
+
+    li.list-group-item
+      border-left : 0
+      border-right: 0
+      border-top  : 0
+      border-radius: 0

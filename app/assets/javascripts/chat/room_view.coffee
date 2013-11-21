@@ -2,20 +2,31 @@
 
 class Chat.RoomView
   scroll_locked: true
+  last_received_day_id: null
 
   constructor: (@room, messages, users) ->
     @create_element()
     @el = $("#room-#{@room.id}")
     for message in messages
       @append message
-    users_items = ("<li data-user='#{u}'>#{u}</li>" for u in users)
-    @get_users_list().append users_items.join ''
+    @get_users_list().append (@user_template user for user in users).join ''
     @bind_events()
 
   append: (data) =>
+    console.dir data.at
+    day_id = @format_date_id(data.at)
+    if day_id isnt @last_received_day_id
+      @get_output_wrapper().append """
+        <p class="day_header">
+          <span class="time"></span>
+          <span class="user"></span>
+          <span class="message">#{@format_date_header data.at}</span>
+        </p>
+      """
+      @last_received_day_id = day_id
     @get_output_wrapper().append """
       <p class="message">
-        <span class="time">#{data.at}</span>
+        <span class="time">#{@format_date data.at}</span>
         <span class="user">#{data.user}</span>
         <span class="message">#{data.message}</span>
       </p>
@@ -23,12 +34,10 @@ class Chat.RoomView
     @scroll_to_bottom() if @scroll_locked
 
   user_joined: (data) =>
-    @get_users_list().append """
-      <li data-user="#{data.user}">#{data.user}</li>
-    """
+    @get_users_list().append @user_template data.user
     @get_output_wrapper().append """
       <p class="joined">
-        <span class="time">#{data.at}</span>
+        <span class="time">#{@format_date data.at}</span>
         <span class="user">#{data.user}</span>
         <span class="message">joined the room</span>
       </p>
@@ -38,10 +47,15 @@ class Chat.RoomView
     @get_users_list().find("li[data-user='#{data.user}']").remove()
     @get_output_wrapper().append """
       <p class="left">
-        <span class="time">#{data.at}</span>
+        <span class="time">#{@format_date data.at}</span>
         <span class="user">#{data.user}</span>
         <span class="message">left the room</span>
       </p>
+    """
+
+  user_template: (user) =>
+    """
+      <li class="list-group-item" data-user="#{user}">#{user}</li>
     """
 
   activate: =>
@@ -80,7 +94,7 @@ class Chat.RoomView
             <div class="wrapper"></div>
           </div>
           <div class="users-list col-md-2">
-            <ul></ul>
+            <ul class="list-group"></ul>
           </div>
         </div>
       </div>
@@ -98,3 +112,9 @@ class Chat.RoomView
   scroll_to_bottom: =>
     output = @get_output()
     output.scrollTop @get_output_wrapper().height() - output.height()
+
+  format_date: (date) => moment(new Date date).format("HH:mm:ss")
+
+  format_date_id: (date) => moment(new Date date).format("YYYYMMDD")
+
+  format_date_header: (date) => moment(new Date date).format("dddd, MMMM Do YYYY")
