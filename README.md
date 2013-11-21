@@ -54,6 +54,7 @@ Use the `users_ctl` script to manage your users:
 coffee users_ctl.coffee create john@mikamai.com johnsmith # create a user
 coffee users_ctl.coffee list # list created users
 coffee users_ctl.coffee destroy john@mikamai.com # removes a user
+coffee users_ctl.coffee --help # prints help
 ```
 
 #### Ready!
