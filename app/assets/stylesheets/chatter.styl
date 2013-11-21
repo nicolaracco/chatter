@@ -2,7 +2,7 @@
 @import "bootstrap-theme.css";
 
 border-color = #dddddd
-day-header-color = #999999
+dehighlight-color = #999999
 
 .container
   width: 100%
@@ -44,7 +44,12 @@ day-header-color = #999999
       &.day_header
         span.message
           font-size: large
-          color    : day-header-color
+          color    : dehighlight-color
+
+      &.joined, &.left
+        span:not(.time)
+          color: dehighlight-color
+          font-style: italic
 
 .users-list
   overflow-y: scroll

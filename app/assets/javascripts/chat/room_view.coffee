@@ -3,6 +3,7 @@
 class Chat.RoomView
   scroll_locked: true
   last_received_day_id: null
+  last_received_time_id: null
 
   constructor: (@room, messages, users) ->
     @create_element()
@@ -14,6 +15,7 @@ class Chat.RoomView
 
   append: (data) =>
     day_id = @format_date_id(data.at)
+    time_id = @format_date data.at
     if day_id isnt @last_received_day_id
       @get_output_wrapper().append """
         <p class="day_header">
@@ -23,13 +25,20 @@ class Chat.RoomView
         </p>
       """
       @last_received_day_id = day_id
+
     if data.type is 'joined'
       data.message = 'joined this room'
     else if data.type is 'left'
       data.message = 'left this room'
+
+    time_to_show = if time_id is @last_received_time_id
+      ''
+    else
+      @last_received_time_id = time_id
+
     @get_output_wrapper().append """
       <p class="#{data.type ? 'message'}">
-        <span class="time">#{@format_date data.at}</span>
+        <span class="time">#{time_to_show}</span>
         <span class="user">#{data.user}</span>
         <span class="message">#{data.message}</span>
       </p>
@@ -104,7 +113,7 @@ class Chat.RoomView
     output = @get_output()
     output.scrollTop @get_output_wrapper().height() - output.height() + 15
 
-  format_date: (date) => moment(new Date date).format("HH:mm:ss")
+  format_date: (date) => moment(new Date date).format("HH:mm")
 
   format_date_id: (date) => moment(new Date date).format("YYYYMMDD")
 
