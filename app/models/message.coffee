@@ -18,4 +18,13 @@ schema = Schema
     type    : String
     required: true
 
+schema.methods.to_json = ->
+  {
+    at     : @at,
+    user   : @username,
+    message: @message,
+    type   : @type,
+    room   : @_room
+  }
+
 module.exports = schema
