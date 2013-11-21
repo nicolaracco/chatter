@@ -1,7 +1,9 @@
 #chat.container
   ul#rooms_list.nav.nav-tabs
     li.active
-      a(href="#room-chooser" data-toggle="tab") Rooms
+      a(href="#room-chooser" data-toggle="tab")
+        span.glyphicon.glyphicon-home
+        span Rooms
   .tab-content
     != partial('welcome/room_chooser', { rooms: rooms })
   nav#input-navbar.navbar.navbar-fixed-bottom.navbar-default.hide

@@ -87,7 +87,10 @@ class Chat.RoomView
 
   user_template: (user) =>
     """
-      <li class="list-group-item" data-user="#{user}">#{user}</li>
+      <li class="list-group-item" data-user="#{user}">
+        <span class="glyphicon glyphicon-user"></span>
+        #{user}
+      </li>
     """
 
   activate: =>
@@ -116,7 +119,10 @@ class Chat.RoomView
   create_element: =>
     $('#rooms_list').append """
       <li>
-        <a id="room-link-#{@room.id}" data-room="#{@room.id}" href="#room-#{@room.id}" data-toggle="tab">#{@room.name}</a>
+        <a id="room-link-#{@room.id}" data-room="#{@room.id}" href="#room-#{@room.id}" data-toggle="tab">
+          <span class="glyphicon glyphicon-bullhorn"></span>
+          #{@room.name}
+        </a>
       </li>
     """
     $('.tab-content').append """
