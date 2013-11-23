@@ -110,6 +110,7 @@ class Chatter.RoomPageView extends Chatter.PageView
     @input_view.setElement(@$el.find('.input-navbar')).render()
     super
     @input_view.gain_focus() if @$el.hasClass 'active'
+    @set_scroll_locked()
     @
 
   log_output_el: => @$el.find('.log-output')
