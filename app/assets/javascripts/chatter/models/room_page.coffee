@@ -14,7 +14,7 @@ class Chatter.RoomPage extends Chatter.Page
       conn.on "room-#{@id}:error", (error) =>
         @trigger 'error', new Chatter.Error error
       conn.on "room-#{@id}:log", (data) =>
-        @messages.add data
+        @messages.process_log data
       conn.on "room-#{@id}:joined", (data) =>
         @messages.add data
       conn.on "room-#{@id}:left", (data) =>

@@ -11,6 +11,10 @@ class Chatter.MessageView extends Backbone.View
     <section class="message"><%= message %></section>
   """
 
+  initialize: =>
+    super
+    @listenTo @model, 'change:message', @render
+
   render: =>
     @$el.html @template @converted_attributes()
     @$el.addClass "type-#{@model.get 'type'}"
@@ -20,5 +24,11 @@ class Chatter.MessageView extends Backbone.View
     {
       time     : moment(@model.get('at')).format('HH:mm')
       username : @model.get('user')
-      message  : @model.get('message')
+      message  : @parse_description()
     }
+
+  parse_description: =>
+    message = @model.get('message')
+    while message.indexOf("\n") > -1
+      message = message.replace "\n", "<br/>"
+    message

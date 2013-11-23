@@ -4,6 +4,13 @@ class Chatter.Messages extends Backbone.Collection
   model: (attrs, options) ->
     new Chatter.Message attrs, options
 
+  process_log: (data) =>
+    existing = @findWhere id: data.id
+    if existing
+      existing.set 'message', data.message
+    else
+      @add data
+
 class Chatter.MessagesView extends Backbone.View
   attributes:
     scroll_locked: false
@@ -11,6 +18,8 @@ class Chatter.MessagesView extends Backbone.View
   initialize: =>
     @listenTo @collection, 'add',   (model) =>
       @add_message(model)
+      _.defer @scroll_to_bottom
+    @listenTo @collection, 'change:message', =>
       _.defer @scroll_to_bottom
     @listenTo @collection, 'reset', @render
 

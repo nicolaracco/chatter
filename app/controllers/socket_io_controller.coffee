@@ -63,18 +63,25 @@ class SocketIOController
       if err? or not room?
         @send_error 'Cannot find this room', err, id
       else
-        message = new models.Message
-          at      : new Date
-          username: @username
-          message : data.message
-          _room   : id
-          type    : 'talk'
-        message.save (err) =>
+        models.Message.last_one_in_room id, (err, message) =>
           if err?
-            @send_error 'Cannot save the message', err, id
+            @send_error 'Cannot save message', err, data.room_id
           else
-            @io.sockets.in("room-#{room.id}").emit "room-#{id}:log", message.to_json()
-
+            moment = require 'moment'
+            if (not message?) or message.type isnt 'talk' or message.username isnt @username or moment().diff(message.updated_at) > 10000
+              message = new models.Message
+                at      : new Date
+                username: @username
+                message : data.message
+                _room   : id
+                type    : 'talk'
+            else
+              message.message += "\n#{data.message}"
+            message.save (err) =>
+              if err?
+                @send_error 'Cannot save the message', err, id
+              else
+                @io.sockets.in("room-#{room.id}").emit "room-#{id}:log", message.to_json()
 
   leave_room: (id) =>
     if @rooms_ids().indexOf(id) >= 0
