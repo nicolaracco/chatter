@@ -1,3 +1,4 @@
+_ = require 'underscore'
 Schema = require('mongoose').Schema
 
 schema = Schema
@@ -26,5 +27,12 @@ schema.methods.to_json = ->
     type   : @type,
     room   : @_room
   }
+
+schema.statics.last_in_room = (room_id, callback) ->
+  @find(_room: room_id).sort(at: -1).limit(20).exec (err, messages) ->
+    if err?
+      callback err
+    else
+      callback null, _(messages).reverse()
 
 module.exports = schema

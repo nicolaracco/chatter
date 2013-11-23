@@ -1,109 +1,160 @@
-@import "bootstrap.css";
-@import "bootstrap-theme.css";
+gray-color = #999999
 
-border-color = #dddddd
-dehighlight-color = #999999
+html, body
+  overflow: hidden
 
-.lighter
-  background-color: #fff
-.darker
-  background-color: #f9f9f9
+html, body, #pages, .page, .main-scroller, .page > .row
+  height: 100%
 
-.nav-tabs > li .close
+body
+  padding-top   : 70px
+  padding-bottom: 70px
+
+.nav > li .close
   margin   : -2px 0 0 10px
   font-size: 18px
   float    : none
 
-.container
-  width: 100%
+.page:not(.active)
+  display: none
 
-#room-chooser
-  padding-top: 20px
-
-#rooms-content button
-  width: 100%
-
-#input-navbar
-  #send-input
-    width: 100%
-
-  form,
-  form > .form-group,
-  form > .form-group > .input-group
-    width: 100%
-
-.room-output
-  overflow-y: scroll
-  padding-right: 0
-  border-right: 1px solid border-color
-
-  &::-webkit-scrollbar {
-    width: 0px;
-    height: 10px;
-  }
-
-  .wrapper
-    min-height: 100%
-    width: 100%
-    border-left: 1px solid border-color
-    padding-top: 10px
-    padding-bottom: 5px
-
-    .breadcrumb
-      margin-bottom: 0
-
-    .messages
-      display: table
-      width: 100%
-
-    article
-      display: table-row
-      width: 100%
-
-      &.message
-        .user:after
-          content: ':'
-
-      &.day_header
-        .message
-          font-size: large
-          color    : dehighlight-color
-
-      &.action:not(.time)
-        color: dehighlight-color
-        font-style: italic
-
-      section
-        display: table-cell
-        padding-left: 10px
-
-        &.time
-          @extend .lighter
-          padding-right: 10px
-          border-right: 1px solid border-color
-          width: 2em
-          color: dehighlight-color
-          font-style: normal
-        &.user
-          width: 6em
-
-.users-list
-  padding-left: 0
+.main-scroller
   overflow-y: scroll
 
-  ul.list-group
-    min-height: 100%
-    margin-bottom: 0
-    border-left: 1px solid border-color
-    border-right: 1px solid border-color
+.log-output
+  width: 100%
 
-    li.list-group-item
-      border-left : 0
-      border-right: 0
-      border-top  : 0
-      border-radius: 0
+  article.log-entry
+    display: table-row
+    width  : 100%
 
-      &:nth-child(odd)
-        @extend .lighter
-      &:nth-child(even)
-        @extend .darker
+    &:nth-child(even)
+      background-color: #f9f9f9
+
+    &.type-joined, &.type-left
+      color: gray-color
+
+    section
+      display     : table-cell
+      width       : 100%
+      line-height : 1.6em
+      padding     : 3px 0
+
+      &.timestamp
+        width: 2em
+        padding: 0 5px 0 10px
+
+      &.user
+        width: 6em
+        padding: 0 10px 0 5px
+
+// border-color = #dddddd
+// dehighlight-color = #999999
+
+// .lighter
+//   background-color: #fff
+// .darker
+//   background-color: #f9f9f9
+
+// .nav-tabs > li .close
+//   margin   : -2px 0 0 10px
+//   font-size: 18px
+//   float    : none
+
+
+// #room-chooser
+//   padding-top: 20px
+
+// #rooms-content button
+//   width: 100%
+
+// #input-navbar
+//   #send-input
+//     width: 100%
+
+//   form,
+//   form > .form-group,
+//   form > .form-group > .input-group
+//     width: 100%
+
+// .room-tab
+//   .main
+//     overflow-y: scroll
+//     padding-right: 0
+//     border-right: 1px solid border-color
+
+//     &::-webkit-scrollbar {
+//       width: 0px;
+//       height: 10px;
+//     }
+
+//   .sidebar
+//     padding-left: 0
+//     overflow-y: scroll
+
+//   .room-output
+//     min-height: 100%
+//     width: 100%
+//     border-left: 1px solid border-color
+//     padding-top: 10px
+//     padding-bottom: 5px
+
+//     .breadcrumb
+//       margin-bottom: 0
+
+//     .messages
+//       display: table
+//       width: 100%
+
+//     article
+//       display: table-row
+//       width: 100%
+
+//       &:nth-child(odd)
+//         @extend .lighter
+//       &:nth-child(even)
+//         @extend .darker
+
+//       &.message
+//         .user:after
+//           content: ':'
+
+//       &.day_header
+//         .message
+//           font-size: large
+//           color    : dehighlight-color
+
+//       &.action:not(.time)
+//         color: dehighlight-color
+//         font-style: italic
+
+//       section
+//         display: table-cell
+//         padding-left: 10px
+
+//         &.time
+//           @extend .lighter
+//           padding-right: 10px
+//           border-right: 1px solid border-color
+//           width: 2em
+//           color: dehighlight-color
+//           font-style: normal
+//         &.user
+//           width: 6em
+
+//   .users-list
+//     min-height: 100%
+//     margin-bottom: 0
+//     border-left: 1px solid border-color
+//     border-right: 1px solid border-color
+
+//     li.list-group-item
+//       border-left : 0
+//       border-right: 0
+//       border-top  : 0
+//       border-radius: 0
+
+//       &:nth-child(odd)
+//         @extend .lighter
+//       &:nth-child(even)
+//         @extend .darker

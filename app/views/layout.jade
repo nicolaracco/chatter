@@ -2,37 +2,39 @@ doctype 5
 html(lang="en")
   head
     title Chatter
+    != css('application')
     != css('chatter')
+    != js('application')
+    script(type="text/javascript" src="/socket.io/socket.io.js")
+    != js('chatter/models')
+    != js('chatter/collections')
     != js('chatter')
-    if is_authenticated
-      script(type="text/javascript" src="/socket.io/socket.io.js")
   body
-    if is_authenticated
-      nav.navbar.navbar-default(role="navigation")
-        .navbar-header
-          button.navbar-toggle(type="button" data-toggle="collapse" data-target="#main-nav-collapse")
-            span.sr-only Toggle navigation
-            span.icon-bar
-            span.icon-bar
-            span.icon-bar
-          a.navbar-brand(href="/") Chatter
+    nav.navbar.navbar-default.navbar-fixed-top(role="navigation")
+      .navbar-header
+        button.navbar-toggle(type="button" data-toggle="collapse" data-target="#main-nav-collapse")
+          span.sr-only Toggle navigation
+          span.icon-bar
+          span.icon-bar
+          span.icon-bar
+        a.navbar-brand(href="/") Chatter
 
-        #main-nav-collapse.collapse.navbar-collapse
-          ul.nav.navbar-nav.navbar-right
-            li
-              a(href="/logout") Logout
-    .container
-      .row
-        h1.text-center Chatter
-    .container
-      .row
-        .col-md-6.col-md-offset-3
-          if error_messages.length > 0
-            .alert.alert-warning
-              for message in error_messages
-                p= message
-          if info_messages.length > 0
-            .alert.alert-info
-              for message in info_messages
-                p= message
+      #main-nav-collapse.collapse.navbar-collapse
+        ul#pages-links.nav.navbar-nav.navbar
+        ul.nav.navbar-nav.navbar-right
+          li
+            a(href="/logout") Logout
+
+    if error_messages.length > 0 || info_messages.length > 0
+      .container
+        .row
+          .col-md-6.col-md-offset-3
+            if error_messages.length > 0
+              .alert.alert-warning
+                for message in error_messages
+                  p= message
+            if info_messages.length > 0
+              .alert.alert-info
+                for message in info_messages
+                  p= message
     != body

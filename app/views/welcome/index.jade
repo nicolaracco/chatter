@@ -1,16 +1,9 @@
-#chat.container
-  ul#rooms_list.nav.nav-tabs
-    li.active
-      a#room-chooser-link(href="#room-chooser" data-toggle="tab")
-        span.glyphicon.glyphicon-home
-        span Rooms
-  .tab-content
-    != partial('welcome/room_chooser', { rooms: rooms })
-  nav#input-navbar.navbar.navbar-fixed-bottom.navbar-default.hide
-    .container
-      form.navbar-form.navbar-left
-        .form-group
-          .input-group
-            span.input-group-addon
-              span.glyphicon.glyphicon-comment
-            input#send-input.form-control(type="text" required="true" placeholder="Say something ...")
+#pages.container
+nav#input-navbar.navbar.navbar-fixed-bottom.navbar-default.hide
+  .container
+    form.navbar-form.navbar-left
+      .form-group
+        .input-group
+          span.input-group-addon
+            span.glyphicon.glyphicon-comment
+          input#send-input.form-control(type="text" required="true" placeholder="Say something ...")

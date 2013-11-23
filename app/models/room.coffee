@@ -11,7 +11,7 @@ schema = Schema
     ref : 'Message'
   }]
 
-schema.methods.to_json = ->
+schema.methods.to_json = (attrs = {}) ->
   { id: @id, name: @name }
 
 module.exports = schema
