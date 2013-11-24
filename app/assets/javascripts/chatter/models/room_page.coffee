@@ -9,10 +9,12 @@ class Chatter.RoomPage extends Chatter.Page
   is_removable: => true
 
   initialize: =>
+    super
     do (conn = Chatter.connection) =>
       conn.on "room-#{@id}:reset", @reset
       conn.on "room-#{@id}:error", (error) =>
-        @trigger 'error', new Chatter.Error error
+        @error.set 'description', error.description
+        @error.set 'active', true
       conn.on "room-#{@id}:log", (data) =>
         @messages.process_log data
       conn.on "room-#{@id}:joined", (data) =>
@@ -20,6 +22,8 @@ class Chatter.RoomPage extends Chatter.Page
       conn.on "room-#{@id}:left", (data) =>
         @messages.add data
       conn.emit 'room:join', @id
+      conn.on 'reconnect', =>
+        conn.emit 'room:join', @id
 
   destroy: =>
     do (conn = Chatter.connection) =>
@@ -62,6 +66,12 @@ class Chatter.RoomInputView extends Backbone.View
     @$el.html @template
     @
 
+  disable: =>
+    @message_el().attr 'disabled', 'disabled'
+
+  enable: =>
+    @message_el().removeAttr 'disabled'
+
   send_message: (e) =>
     e.preventDefault()
     @trigger 'send_message', @message_el().val()
@@ -76,6 +86,7 @@ class Chatter.RoomInputView extends Backbone.View
 
 class Chatter.RoomPageView extends Chatter.PageView
   template: """
+    <div class="alert alert-warning hide"></div>
     <div class="row">
       <div class="col-md-9 main-scroller">
         <div class="log-output"></div>
@@ -96,15 +107,24 @@ class Chatter.RoomPageView extends Chatter.PageView
       collection: @model.users
       el: @users_list_el()
     @input_view = new Chatter.RoomInputView
+    @error_view = new Chatter.ErrorView model: @model.error
 
     @listenTo @model, 'error', @add_error
     @listenTo @model, 'change:active', @set_scroll_locked
+    @listenTo @model.error, 'change:active', @show_disconnect_error
     @input_view.on 'send_message', @send_message
 
   add_error: (error) => @messages_view.add_error error
 
+  show_disconnect_error: (error) =>
+    if error.get('active')
+      @input_view.disable()
+    else
+      @input_view.enable()
+
   render: =>
     @$el.html @template
+    @error_view.setElement(@$el.find('.alert')).render()
     @messages_view.setElement(@log_output_el()).render()
     @users_view.setElement(@users_list_el()).render()
     @input_view.setElement(@$el.find('.input-navbar')).render()

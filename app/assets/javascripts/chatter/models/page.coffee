@@ -1,8 +1,17 @@
 @Chatter ?= {}
 
 class Chatter.Page extends Backbone.Model
+  constructor: ->
+    @error = new Chatter.Error
+    super
+
   initialize: =>
     @set 'active', false unless @get('active')?
+    Chatter.connection.on 'disconnect', =>
+      @error.set 'description', 'Connection lost'
+      @error.set 'active', true
+    Chatter.connection.on 'reconnect', =>
+      @error.set 'active', false
 
   is_removable: -> false
 

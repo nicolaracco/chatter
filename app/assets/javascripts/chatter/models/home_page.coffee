@@ -10,9 +10,10 @@ class Chatter.HomePage extends Chatter.Page
     do (conn = Chatter.connection) =>
       conn.on 'home:rooms', @reset
       conn.on 'home:error', (data) =>
-        @trigger 'error', new Chatter.Error data
+        @error.set 'description', data
+        @error.set 'active', true
       conn.on 'home:create-room:error', (data) =>
-        @trigger 'create-room:error', new Chatter.Error data
+        @trigger 'create-room:error', new Chatter.Error description: data.description, active: true
       conn.on 'home:create-room:success', (data) =>
         @trigger 'create-room:success', data
       conn.on 'home:rooms:created', (data) =>
@@ -89,6 +90,7 @@ class Chatter.CreateRoomModalView extends Backbone.View
 class Chatter.HomePageView extends Chatter.PageView
   template: """
     <div class="row">
+      <div class="alert alert-warning hide"></div>
       <ul class="nav nav-pills nav-stacked text-center">
       </ul>
       <div class="actions text-center">
@@ -106,19 +108,29 @@ class Chatter.HomePageView extends Chatter.PageView
     @modal_view = new Chatter.CreateRoomModalView
     @rooms_view = new Chatter.RoomsItemsView
       collection: @model.rooms
+    @errors_view = new Chatter.ErrorView model: @model.error
 
-    @listenTo @model, 'error', @show_error
+    @listenTo @model.error, 'change:active', @show_disconnect_error
+    # @listenTo @model, 'error', @show_error
     @listenTo @model, 'create-room:error', @modal_view.show_error
     @listenTo @model, 'create-room:success', @modal_view.hide
     @modal_view.on 'form-submit', @create_room
     @rooms_view.on 'room-item:clicked', @join_room
 
-  show_error: (error) =>
-    view = new Chatter.ErrorView model: error
-    @$el.prepend view.render().$el
+  show_disconnect_error: (error) =>
+    if error.get('active')
+      @modal_view.hide()
+      @rooms_view.disable()
+      @$el.find('.open-create-room').attr 'disabled', 'disabled'
+    else
+      @rooms_view.enable()
+      @$el.find('.open-create-room').removeAttr 'disabled'
+
+  hide_disconnection_error: (error) =>
 
   render: =>
     @$el.html @template
+    @errors_view.setElement(@alert_el()).render()
     @rooms_view.setElement(@nav_el()).render()
     @modal_view.setElement(@modal_el()).render()
     super
@@ -126,6 +138,9 @@ class Chatter.HomePageView extends Chatter.PageView
 
   content_el: =>
     @$el.children('.row')
+
+  alert_el: =>
+    @content_el().children('.alert')
 
   nav_el: =>
     @content_el().children('ul.nav')
@@ -141,43 +156,3 @@ class Chatter.HomePageView extends Chatter.PageView
 
   join_room: (room) =>
     @model.join_room room
-
-class Chatter.RoomItemView extends Backbone.View
-  tagName: 'li'
-  className: 'room'
-
-  template: _.template """
-    <a href="#<%= id %>"><%= name %></a>
-  """
-
-  events:
-    'click a' : 'click'
-
-  render: =>
-    @$el.html @template @model.attributes
-    @
-
-  click: (e) =>
-    e.preventDefault()
-    @trigger 'room-item:clicked', @model
-
-class Chatter.RoomsItemsView extends Backbone.View
-  tagName: 'ul'
-  className: 'nav nav-pills nav-stacked text-center'
-
-  initialize: =>
-    @listenTo @collection, 'add', @add_room_item
-    @listenTo @collection, 'reset', @render
-
-  add_room_item: (model) =>
-    view = new Chatter.RoomItemView {model}
-    view.on 'room-item:clicked', @room_item_clicked
-    @$el.append view.render().$el
-
-  render: =>
-    @$el.empty()
-    @collection.each @add_room_item
-    @
-
-  room_item_clicked: (room) =>
-    @trigger 'room-item:clicked', room

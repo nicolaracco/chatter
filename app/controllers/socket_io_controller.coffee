@@ -33,8 +33,7 @@ class SocketIOController
     room = new models.Room {name}
     room.save (err) =>
       if err?
-        msg = if err.errors.name? then 'Name already taken' else err.message
-        @socket.emit 'home:create-room:error', description: "Cannot create the room: #{msg}"
+        @socket.emit 'home:create-room:error', description: "Cannot create a room with this name"
       else
         @socket.emit 'home:create-room:success', id: room.id, name: room.name
         @io.sockets.emit 'home:rooms:created', id: room.id, name: room.name
@@ -42,7 +41,7 @@ class SocketIOController
   join_room: (id) =>
     models.Room.findOne _id: id, (err, room) =>
       if err? or not room?
-        @send_error 'Cannot find this room', err
+        @send_error 'Cannot find this room', err, id
       else
         message_attrs = type: 'action', message: 'joined this room', room_id: id
         @save_message message_attrs, (message) =>
@@ -90,7 +89,7 @@ class SocketIOController
       @save_message message_attrs, (message) =>
         @io.sockets.in("room-#{id}").emit "room-#{id}:left", message.to_json()
     else
-      @send_error 'You are not subscribed to this room'
+      @send_error 'You are not subscribed to this room', null, id
 
   # shortand function to save a message with the current user as subject
   # and execute a success callback
@@ -114,7 +113,7 @@ class SocketIOController
   send_error: (message, err, room_id) =>
     message = if err? then "#{message}: #{err}" else message
     if room_id?
-      @socket.emit "room-#{room_id}:error", room: room_id, message: message
+      @socket.emit "room-#{room_id}:error", room: room_id, description: message
     else
       @socket.emit 'home:error', message
 
