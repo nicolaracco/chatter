@@ -1,3 +1,11 @@
+mocha = require 'jake-mocha'
+mocha.defineTask
+  name : 'default'
+  files: 'test/**/*_spec.coffee'
+  mochaOptions:
+    ui       : 'bdd'
+    reporter : 'spec'
+
 desc 'Users management tasks'
 namespace 'users', ->
   models   = require './app/models'

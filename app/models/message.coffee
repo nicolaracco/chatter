@@ -1,4 +1,4 @@
-_ = require 'underscore'
+_      = require 'underscore'
 Schema = require('mongoose').Schema
 
 schema = Schema
@@ -23,7 +23,7 @@ schema = Schema
 
 schema.methods.to_json = ->
   {
-    id     : @_id,
+    id     : @id,
     at     : @at,
     user   : @username,
     message: @message,
@@ -42,7 +42,7 @@ schema.statics.last_one_in_room = (room_id, callback) ->
     else
       callback null, (messages.length > 0 and messages[0] or null)
 
-schema.statics.last_in_room = (room_id, callback) ->
+schema.statics.last_page_in_room = (room_id, callback) ->
   @find(_room: room_id).sort(at: -1).limit(20).exec (err, messages) ->
     if err?
       callback err

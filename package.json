@@ -4,28 +4,35 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "coffee-script"    : "1.6.x",
-    "underscore"       : "1.5.x",
-    "glob"             : "3.2.x",
-    "nconf"            : "0.6.x",
-    "express"          : "3.x",
-    "express-partials" : "0.1.x",
-    "jade"             : "0.35.x",
-    "connect-assets"   : "2.5.x",
-    "stylus"           : "0.40.x",
-    "ejs"              : "0.8.x",
-    "passport"         : "0.1.x",
-    "passport-local"   : "0.1.x",
-    "connect-flash"    : "0.1.x",
-    "mongoose"         : "3.8.x",
-    "bcrypt"           : "0.7.x",
-    "socket.io"        : "0.9.x",
-    "connect-redis"    : "1.4.x",
-    "passport.socketio": "2.1.x",
-    "moment"           : "2.4.x"
+    "coffee-script"            : "1.6.x",
+    "underscore"               : "1.5.x",
+    "glob"                     : "3.2.x",
+    "nconf"                    : "0.6.x",
+    "express"                  : "3.x",
+    "express-partials"         : "0.1.x",
+    "jade"                     : "0.35.x",
+    "connect-assets"           : "2.5.x",
+    "stylus"                   : "0.40.x",
+    "ejs"                      : "0.8.x",
+    "passport"                 : "0.1.x",
+    "passport-local"           : "0.1.x",
+    "connect-flash"            : "0.1.x",
+    "mongoose"                 : "3.8.x",
+    "mongoose-unique-validator": "0.2.x",
+    "bcrypt"                   : "0.7.x",
+    "socket.io"                : "0.9.x",
+    "connect-redis"            : "1.4.x",
+    "passport.socketio"        : "2.1.x",
+    "moment"                   : "2.4.x"
   },
   "devDependencies": {
-    "jake"      : "0.7.x",
-    "jake-mocha": "0.9.x"
+    "mocha"           : "1.14.x",
+    "chai"            : "1.8.x",
+    "jake"            : "0.7.x",
+    "jake-mocha"      : "0.9.x",
+    "coffee-backtrace": "*"
+  },
+  "scripts": {
+    "test": "jake"
   }
 }

@@ -12,6 +12,14 @@ schema = Schema
     type    : String
     required: true
 
+schema.plugin require 'mongoose-unique-validator'
+
+schema.path('email').validate (email) ->
+  if email?
+    emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/
+    emailRegex.test email
+, 'Email is not valid.'
+
 # password handshaking
 schema.pre 'save', (next) ->
   return next() unless @isModified('password')
@@ -23,7 +31,7 @@ schema.pre 'save', (next) ->
       next()
 
 # password checking method
-schema.methods.comparePassword = (candidate_password, next) ->
+schema.methods.compare_password = (candidate_password, next) ->
   bcrypt.compare candidate_password, @password, (err, is_match) ->
     return next(err) if err?
     next null, is_match

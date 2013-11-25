@@ -59,11 +59,15 @@ jake users:remove   # Removes a user. E.g. jake users:remove[john@mikamai.com]
 
 #### Ready!
 
-Now you can start the server with: `coffee app.coffee`
+Now you can start the server with: `coffee app.coffee`.
+
+### Specs
+
+Run `jake` without arguments, or `npm test`.
 
 ### TODO
 
-- Tests of any type
+- Integration Tests on web pages and socket.io
 - Transcript
 - Admin panel for user management
 - Room deletion

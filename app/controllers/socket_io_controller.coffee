@@ -47,7 +47,7 @@ class SocketIOController
         @save_message message_attrs, (message) =>
           @io.sockets.in("room-#{id}").emit "room-#{id}:joined", message.to_json()
           @socket.join "room-#{id}"
-          models.Message.last_in_room room, (err, messages) =>
+          models.Message.last_page_in_room room, (err, messages) =>
             if err?
               @send_error 'Cannot fetch messages', err, id
             else

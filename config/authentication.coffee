@@ -11,7 +11,7 @@ module.exports = (server) ->
     models.User.findOne email: email, (err, user) ->
       return done(err) if err?
       if user?
-        user.comparePassword password, (err, is_match) ->
+        user.compare_password password, (err, is_match) ->
           return done(err) if err?
           if is_match
             done null, user
@@ -32,7 +32,7 @@ module.exports = (server) ->
     server.io.set 'authorization', passport_socket_io.authorize
       cookieParser: express.cookieParser
       secret      : server.config.session.secret
-      store       : server.sessionStore
+      store       : server.session_store
       success     : (data, accept) ->
         accept null, true
       fail        : (data, message, error, accept) ->

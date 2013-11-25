@@ -5,9 +5,9 @@ partials   = require 'express-partials'
 
 module.exports = (server) ->
   RedisStore = require('connect-redis')(express)
-  server.sessionStore = new RedisStore
+  server.session_store = new RedisStore
   server.on 'stop', -> # close the redis connection on quit
-    server.sessionStore.client.quit()
+    server.session_store.client.quit()
 
   app = server.app
   app.use partials()
@@ -16,7 +16,7 @@ module.exports = (server) ->
   app.use express.urlencoded()
   app.use express.methodOverride()
   app.use express.session
-    store : server.sessionStore
+    store : server.session_store
     secret: server.config.session.secret
   app.set 'views',       './app/views'
   app.set 'view engine', 'jade'

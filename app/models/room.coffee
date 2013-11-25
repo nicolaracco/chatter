@@ -11,7 +11,9 @@ schema = Schema
     ref : 'Message'
   }]
 
-schema.methods.to_json = (attrs = {}) ->
+schema.plugin require 'mongoose-unique-validator'
+
+schema.methods.to_json = ->
   { id: @id, name: @name }
 
 module.exports = schema
