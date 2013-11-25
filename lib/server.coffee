@@ -12,7 +12,8 @@ class Server
     start: []
     stop : []
 
-  constructor: (@root) ->
+  constructor: (@root, @env) ->
+    @env   ?= process.env.NODE_ENV ? 'development'
     @app    = express()
     @configure()
 

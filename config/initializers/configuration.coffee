@@ -7,8 +7,8 @@ module.exports = (server) ->
   nconf.argv().env() # load config from ARGV and ENV variables
   env = process.env.NODE_ENV ? 'development'
   config_files = [
-    "environments/config.#{env}.local.json"
-    "environments/config.#{env}.json",
+    "environments/config.#{server.env}.local.json"
+    "environments/config.#{server.env}.json",
     "config.local.json",
     "config.json"
   ]
