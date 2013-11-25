@@ -4,7 +4,6 @@ express            = require 'express'
 passport           = require 'passport'
 passport_local     = require 'passport-local'
 passport_socket_io = require 'passport.socketio'
-models             = require '../app/models'
 
 module.exports = (server) ->
   strategy = new passport_local.Strategy (email, password, done) ->

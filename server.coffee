@@ -56,7 +56,7 @@ class Server
   configure: =>
     @app.configure =>
       @app.use flash()
-      require('./config/')(@)
+      require('./config/initializers/')(@)
       @app.use @app.router
 
 module.exports = Server
