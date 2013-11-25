@@ -22,7 +22,10 @@
     "socket.io"        : "0.9.x",
     "connect-redis"    : "1.4.x",
     "passport.socketio": "2.1.x",
-    "commander"        : "2.0.x",
     "moment"           : "2.4.x"
+  },
+  "devDependencies": {
+    "jake"      : "0.7.x",
+    "jake-mocha": "0.9.x"
   }
 }

@@ -10,6 +10,8 @@ A simple chat application written in Node.JS with rooms management, authenticati
 - redis (for session management)
 - mongodb
 - node.js
+- coffee-script: Remember to install it with `npm install -g coffee-script`. This way you'll have the executable in your path
+- jake: Remember to install it with `npm install -g jake`. This way you'll have the executable in your path
 
 #### Install
 
@@ -47,13 +49,12 @@ Then check the configuration file and if you don't like it, create a `config.loc
 
 #### Create a user
 
-Use the `users_ctl` script to manage your users:
+Use Jake script to manage your users:
 
 ```bash
-coffee users_ctl.coffee create john@mikamai.com johnsmith # create a user
-coffee users_ctl.coffee list # list created users
-coffee users_ctl.coffee destroy john@mikamai.com # removes a user
-coffee users_ctl.coffee --help # prints help
+jake users:list     # List all users
+jake users:create   # Create a new user. E.g. jake users:create[john@mikamai.com,password]
+jake users:remove   # Removes a user. E.g. jake users:remove[john@mikamai.com]
 ```
 
 #### Ready!

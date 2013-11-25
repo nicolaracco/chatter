@@ -19,7 +19,7 @@ class Server
 
   # Scoping socket.io creation in start method
   # allow us to use the same Server class even when we don't need to start
-  # the server (like in the users_ctl script)
+  # the server (like in Jakefile)
   start: =>
     @server = http.createServer(@app)
     @io = SocketIO.listen @server
