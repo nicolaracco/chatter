@@ -40,8 +40,7 @@ Then check the configuration file and if you don't like it, create a `config.loc
     "uri": "mongodb://localhost:27017/chatter" # mongodb uri
   },
   "assets": {
-    "concat": true, # concatenate assets
-    "minify": true  # minify assets
+    "compile": true # concatenate and minify assets
   }
 }
 ```
