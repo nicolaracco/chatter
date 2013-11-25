@@ -12,7 +12,8 @@ module.exports = (server) ->
   app = server.app
   app.use partials()
   app.use express.cookieParser()
-  app.use express.bodyParser()
+  app.use express.json()
+  app.use express.urlencoded()
   app.use express.methodOverride()
   app.use express.session
     store : server.sessionStore
