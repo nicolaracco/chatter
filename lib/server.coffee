@@ -1,6 +1,6 @@
 # SERVER
 
-models     = require './app/models'
+models     = require '../app/models'
 express    = require 'express'
 glob       = require 'glob'
 path       = require 'path'
@@ -54,7 +54,7 @@ class Server
 
   configure: =>
     @app.configure =>
-      require('./config/initializers/')(@)
+      require('../config/initializers/')(@)
       @app.use @app.router
 
 module.exports = Server

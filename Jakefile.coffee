@@ -9,7 +9,7 @@ mocha.defineTask
 desc 'Users management tasks'
 namespace 'users', ->
   models   = require './app/models'
-  Server   = require './server'
+  Server   = require './lib/server'
 
   desc 'List all users'
   task 'list', ->
