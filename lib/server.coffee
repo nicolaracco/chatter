@@ -14,6 +14,7 @@ class Server
 
   constructor: (@root, @env) ->
     @env   ?= process.env.NODE_ENV ? 'development'
+    @load_configuration()
     @app    = express()
     @configure()
 
@@ -49,7 +50,7 @@ class Server
   # PRIVATE METHODS
 
   load_controllers: =>
-    controllers = glob.sync "#{__dirname}/app/controllers/*_controller.coffee"
+    controllers = glob.sync "#{@root}/app/controllers/*_controller.coffee"
     for controller in controllers
       require(controller).setup(@)
 
@@ -57,5 +58,30 @@ class Server
     @app.configure =>
       require('../config/initializers/')(@)
       @app.use @app.router
+
+
+
+  # Load configuration files
+  # Order of priority:
+  # - ARGV
+  # - ENV
+  # - config/environments/config.NODE_ENV.local.json
+  # - config/environments/config.NODE_ENV.json
+  # - config/config.local.json
+  # - config/config.json
+  load_configuration: =>
+    fs    = require 'fs'
+    nconf = require 'nconf'
+    nconf.argv().env() # load config from ARGV and ENV variables
+    config_files = [
+      "environments/config.#{@env}.local.json"
+      "environments/config.#{@env}.json",
+      "config.local.json",
+      "config.json"
+    ]
+    for config_file in config_files
+      path = "#{@root}/config/#{config_file}"
+      nconf.file config_file, path if fs.existsSync path
+    @config = nconf.load()
 
 module.exports = Server

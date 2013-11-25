@@ -1,4 +1,4 @@
-Server = require './server'
+Server = require './lib/server'
 
 server = new Server __dirname
 server.start()
