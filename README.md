@@ -29,12 +29,15 @@ npm install
 
 #### Configure
 
-Then check the configuration file and if you don't like it, create a `config.local.json` file (in the root path) when you can customize the settings:
+The default configuration is in `config/config.json`. In `config/environments` there is one config file for each environment (each of these takes precedence upon the default configuration).
+
+If you need to change the configuration and you don't want git to track your changes, you can overwrite each file creating a `.local.json` file: `config/config.local.json` to overwrite the default configuration, `config/environments/config.test.local.json` to overwrite the test configuration, and so on.
+
+E.g.
 
 ```
-# config.local.json
+# config/environments/config.production.local.json
 
-# sample configuration for a production environment
 {
   "server": {
     "port": 80 # server port

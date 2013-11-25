@@ -1,0 +1,11 @@
+{
+  "server": {
+    "port": 80
+  },
+  "db": {
+    "uri": "mongodb://localhost:27017/chatter-production"
+  },
+  "assets": {
+    "compile": false
+  }
+}

@@ -1,12 +1,6 @@
 {
-  "server": {
-    "port": 3000
-  },
   "session": {
     "secret": "Chatter default secret"
-  },
-  "db": {
-    "uri": "mongodb://localhost:27017/chatter"
   },
   "assets": {
     "compile": false

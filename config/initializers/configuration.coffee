@@ -5,7 +5,14 @@ nconf = require 'nconf'
 
 module.exports = (server) ->
   nconf.argv().env() # load config from ARGV and ENV variables
-  if fs.existsSync "#{server.root}/config.local.json"
-    nconf.file 'local', "#{server.root}/config.local.json" # load from local
-  nconf.file "#{server.root}/config.json" # load from default
+  env = process.env.NODE_ENV ? 'development'
+  config_files = [
+    "environments/config.#{env}.local.json"
+    "environments/config.#{env}.json",
+    "config.local.json",
+    "config.json"
+  ]
+  for config_file in config_files
+    path = "#{server.root}/config/#{config_file}"
+    nconf.file config_file, path if fs.existsSync path
   server.config = nconf.load()
