@@ -1,6 +1,10 @@
 # Chatter
 
-A simple chat application written in Node.JS with rooms management, authentication, and log persistence.
+A chat application written in Node.JS with rooms management, authentication, and log persistence.
+
+It's an express.js application that uses mongoose as ORM, passport for managing the authentication and redis as a session store.
+
+Server/Client messaging communication is handled by socket.io, which shares the session with express.js to verify users authentication.
 
 
 ### How to use
