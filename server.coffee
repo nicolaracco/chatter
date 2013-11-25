@@ -1,6 +1,5 @@
 # SERVER
 
-flash      = require 'connect-flash'
 models     = require './app/models'
 express    = require 'express'
 glob       = require 'glob'
@@ -55,7 +54,6 @@ class Server
 
   configure: =>
     @app.configure =>
-      @app.use flash()
       require('./config/initializers/')(@)
       @app.use @app.router
 

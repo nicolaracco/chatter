@@ -4,14 +4,12 @@ _ = require 'underscore'
 class Controller
   constructor: (@req, @res) ->
     @name = @constructor.name.replace('Controller', '').toLowerCase()
+    @alerts = @req.session.messages.alerts
+    @notices = @req.session.messages.notices
 
   # shorthand function to render a view passing useful parameters
   render: (view, args = {}) =>
-    base_args =
-      error_messages   : @req.flash('error')
-      info_messages    : @req.flash('info')
-      is_authenticated : @req.isAuthenticated()
-    @res.render "#{@name}/#{view}", _(base_args).extend args
+    @res.render "#{@name}/#{view}", args
 
   redirect_to: (url) =>
     @res.redirect url

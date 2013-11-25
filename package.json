@@ -16,7 +16,6 @@
     "ejs"                      : "0.8.x",
     "passport"                 : "0.1.x",
     "passport-local"           : "0.1.x",
-    "connect-flash"            : "0.1.x",
     "mongoose"                 : "3.8.x",
     "mongoose-unique-validator": "0.2.x",
     "bcrypt"                   : "0.7.x",
