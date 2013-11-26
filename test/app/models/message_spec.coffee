@@ -1,11 +1,11 @@
 require 'coffee-backtrace'
+require('../../spec_helper')()
 _      = require 'underscore'
-root   = require('../../spec_helper')()
 expect = require('chai').expect
 
 describe 'Message model', ->
-  Room    = require("#{root}/app/models").Room
-  Message = require("#{root}/app/models").Message
+  Room    = models.Room
+  Message = models.Message
 
   create_room = (attrs, callback) ->
     default_attrs = { name: 'foo' }

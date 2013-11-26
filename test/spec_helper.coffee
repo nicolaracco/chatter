@@ -1,23 +1,18 @@
-module.exports = ->
+init_test_server = ->
   require('chai').should()
-  root = "#{__dirname}/.."
-  db_uri   = 'mongodb://localhost/chatter-test'
   mongoose = require 'mongoose'
+  Server = require '../lib/server'
+
+  before (done) ->
+    @server = new Server "#{__dirname}/..", 'test'
+    @server.init done
 
   beforeEach (done) ->
-    done = do (done) ->
-      -> mongoose.connection.db.dropDatabase done
-    return done() if mongoose.connection.db
-    mongoose.connect db_uri, done
+    mongoose.connection.db.dropDatabase done
 
   after ->
-    mongoose.disconnect()
-  # Server = require "#{root}/server"
+    @server.stop()
 
-  # beforeEach (done) ->
-  #   @server = new Server root
-  #   clearDB = require('mocha-mongoose')(@server.config.db.uri, noClear: true)
-  #   clearDB(done)
-  # afterEach -> @server.stop()
+  true
 
-  root
+module.exports = -> GLOBAL.test_server_inited ?= init_test_server()

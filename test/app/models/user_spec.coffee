@@ -1,10 +1,10 @@
 require 'coffee-backtrace'
+require('../../spec_helper')()
 _      = require 'underscore'
-root   = require('../../spec_helper')()
 expect = require('chai').expect
 
 describe 'User model', ->
-  User = require("#{root}/app/models").User
+  User = models.User
 
   create_user = (attrs, callback) ->
     default_attrs = { email: 'foo@bar.com', password: 'bar' }
