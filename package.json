@@ -29,7 +29,8 @@
     "chai"            : "1.8.x",
     "jake"            : "0.7.x",
     "jake-mocha"      : "0.9.x",
-    "coffee-backtrace": "*"
+    "coffee-backtrace": "0.3.x",
+    "zombie"          : "latest"
   },
   "scripts": {
     "test": "jake"
