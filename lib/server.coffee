@@ -34,7 +34,7 @@ class Server
   # Scoping socket.io creation in start method
   # allow us to use the same Server class even when we don't need to start
   # the server (like in Jakefile)
-  start: =>
+  start: (done) =>
     if @inited
       @logger.debug "Starting ..."
       @init_app()
@@ -44,18 +44,27 @@ class Server
       @load_controllers()
       @server.listen @config.server.port
       @logger.debug "Listening on port #{@config.server.port}"
+      done?()
     else
       @logger.debug "Server not inited. Initing now ..."
-      @init @start
+      @init => @start done
 
-  stop: =>
+  stop: (done = ->) =>
     callback = _.after 2, =>
       @fire_callbacks 'stop'
       if @server?
-        @logger.debug "Server started. Forcing quit!"
-        process.exit()
+        @logger.debug "Closing connections"
+        s.close() for s in @io.sockets
+        @server.close()
+        done()
+      else
+        done()
     @stop_session_store callback
     @stop_db callback
+    setTimeout =>
+      @logger.error "Cannot stop the server in time. Forcing quit"
+      process.exit(1)
+    , 10000
 
   # PRIVATE METHODS
 
