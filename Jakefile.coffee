@@ -1,7 +1,7 @@
 mocha = require 'jake-mocha'
 mocha.defineTask
   name : 'default'
-  files: 'test/**/*_spec.coffee'
+  files: 'test/**/*_test.coffee'
   mochaOptions:
     ui       : 'bdd'
     reporter : 'spec'
