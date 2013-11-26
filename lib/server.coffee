@@ -49,21 +49,25 @@ class Server
       @logger.debug "Server not inited. Initing now ..."
       @init => @start done
 
-  stop: (done = ->) =>
+  # Callback is called with true if stop is done gracefully
+  # or with false if the server cannot be stopped gracefully
+  # If no callback is given and the server cannot be stopped gracefully
+  # it will exit with code 1
+  stop: (done) =>
     callback = _.after 2, =>
       @fire_callbacks 'stop'
       if @server?
         @logger.debug "Closing connections"
         s.close() for s in @io.sockets
         @server.close()
-        done()
+        done?()
       else
-        done()
+        done?()
     @stop_session_store callback
     @stop_db callback
     setTimeout =>
       @logger.error "Cannot stop the server in time. Forcing quit"
-      process.exit(1)
+      if done? then done(new Error 'Cannot stop gracefully') else process.exit(1)
     , 10000
 
   # PRIVATE METHODS
