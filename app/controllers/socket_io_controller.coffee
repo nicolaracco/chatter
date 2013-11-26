@@ -33,7 +33,7 @@ class SocketIOController
     room = new models.Room {name}
     room.save (err) =>
       if err?
-        @socket.emit 'home:create-room:error', description: "Cannot create a room with this name"
+        @socket.emit 'home:create-room:error', description: "Cannot create a room with name '#{name}'"
       else
         @socket.emit 'home:create-room:success', id: room.id, name: room.name
         @io.sockets.emit 'home:rooms:created', id: room.id, name: room.name
