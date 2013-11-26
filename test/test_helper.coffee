@@ -5,14 +5,15 @@ init_test_server = ->
 
   before (done) ->
     @server = new Server "#{__dirname}/..", 'test'
-    @server.init done
+    @server.start done
 
   beforeEach (done) ->
     mongoose.connection.db.dropDatabase done
 
-  after ->
-    @server.stop()
+  after (done) ->
+    @server.stop done
 
   true
 
-module.exports = -> GLOBAL.test_server_inited ?= init_test_server()
+module.exports = (type) ->
+  GLOBAL.test_server_inited ?= init_test_server()
