@@ -54,23 +54,31 @@ class Server
   # If no callback is given and the server cannot be stopped gracefully
   # it will exit with code 1
   stop: (done) =>
+    force_timeout = setTimeout =>
+      @force_quit done
+      done = null # this way it cannot be called by the
+    , 10000
     callback = _.after 2, =>
       @fire_callbacks 'stop'
-      if @server?
-        @logger.debug "Closing connections"
-        s.close() for s in @io.sockets
-        @server.close()
-        done?()
-      else
+      @stop_http_server ->
+        clearTimeout force_timeout
         done?()
     @stop_session_store callback
     @stop_db callback
-    setTimeout =>
-      @logger.error "Cannot stop the server in time. Forcing quit"
-      if done? then done(new Error 'Cannot stop gracefully') else process.exit(1)
-    , 10000
 
   # PRIVATE METHODS
+
+  stop_http_server: (done) =>
+    if @server?
+      @logger.debug "Closing opened connections"
+      s.close() for s in @io.sockets
+      @server.close done
+    else
+      done()
+
+  force_quit: (done) =>
+    @logger.error "Cannot stop the server in time. Forcing quit"
+    if done? then done(new Error 'Cannot stop gracefully') else process.exit(1)
 
   load_controllers: =>
     controllers = glob.sync "#{@root}/app/controllers/*_controller.coffee"
