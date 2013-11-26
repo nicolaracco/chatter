@@ -1,6 +1,6 @@
 {
   "server": {
-    "port": 3000
+    "port": 3030
   },
   "db": {
     "uri": "mongodb://localhost:27017/chatter-test"
