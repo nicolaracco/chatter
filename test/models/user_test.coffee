@@ -1,5 +1,5 @@
 require 'coffee-backtrace'
-require('../../test_helper')()
+require('../test_helper')()
 _      = require 'underscore'
 expect = require('chai').expect
 
