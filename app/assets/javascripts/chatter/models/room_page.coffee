@@ -85,6 +85,7 @@ class Chatter.RoomInputView extends Backbone.View
     , 200
 
 class Chatter.RoomPageView extends Chatter.PageView
+  className: 'page room-page'
   template: """
     <div class="alert alert-warning hide"></div>
     <div class="row">

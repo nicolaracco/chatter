@@ -4,7 +4,10 @@ Controller = require './controller'
 class AuthenticationController extends Controller
   # /login => login form
   login: =>
-    @render 'login', layout: 'not_logged_in'
+    if @req.isAuthenticated()
+      @redirect_to '/'
+    else
+      @render 'login', layout: 'not_logged_in'
 
   # /logout => signs out the user and redirects him to the root path
   logout: =>

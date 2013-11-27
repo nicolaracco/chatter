@@ -1,19 +1,58 @@
+global._ = require 'underscore'
+global.expect = require('chai').expect
+
+helpers =
+  logout: (done) ->
+    @browser.open "http://localhost:3030/logout", -> done()
+
+  login_as: (email, password, done) ->
+    @browser.set 'onLoadFinished', _.after 2, =>
+      @browser.set 'onLoadFinished', null
+      done()
+    @browser.open "http://localhost:3030/login", =>
+      @browser.evaluate ->
+        $('#email-input').val "foo@bar.com"
+        $('#password-input').val "foo"
+        $('form').submit()
+
+  create_user_and_login: (email, password, done) ->
+    models.User.findOne {email}, (err, user) =>
+      return done err if err?
+      if user?
+        @login_as email, password, done
+      else
+        user = new models.User {email, password}
+        user.save (err) =>
+          return done err if err?
+          @login_as email, password, done
+
 init_test_server = ->
   require('chai').should()
+  phantom = require 'phantom'
   mongoose = require 'mongoose'
   Server = require '../lib/server'
 
   before (done) ->
     @server = new Server "#{__dirname}/..", 'test'
-    @server.start done
+    @server.start =>
+      phantom.create (@phantom) => done()
+    for name, helper of helpers
+      @[name] = _.bind(helper, @)
 
   beforeEach (done) ->
-    mongoose.connection.db.dropDatabase done
+    mongoose.connection.db.dropDatabase (err) =>
+      done err if err?
+      @phantom.createPage (@browser) => done()
+
+  afterEach (done) ->
+    @browser.close()
+    done()
 
   after (done) ->
-    @server.stop done
+    @phantom.exit()
+    @server.stop => done()
 
   true
 
 module.exports = (type) ->
-  GLOBAL.test_server_inited ?= init_test_server()
+  global.test_server_inited ?= init_test_server()

@@ -30,7 +30,7 @@
     "jake"            : "0.7.x",
     "jake-mocha"      : "0.9.x",
     "coffee-backtrace": "0.3.x",
-    "zombie"          : "latest"
+    "phantom"         : "latest"
   },
   "scripts": {
     "test": "jake"
