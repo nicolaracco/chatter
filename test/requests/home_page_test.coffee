@@ -59,13 +59,39 @@ describe 'Home page', ->
             result.should.equal false
             done()
 
+    context 'when a room already exists', ->
+      beforeEach (done) ->
+        room = new models.Room name: 'foo'
+        room.save (err) =>
+          @browser.open "#{@host}", ->
+            setTimeout done, 100
+
+      it 'appears in the list', (done) ->
+        @browser.evaluate (-> $('li.room').length), (result) ->
+          result.should.equal 1
+          done()
+
+      context 'and the user clicks on the room', ->
+        beforeEach (done) ->
+          @browser.evaluate (-> $('li.room a').click()), ->
+            setTimeout done, 100
+
+        it 'a room page is created', (done) ->
+          @browser.evaluate (-> $('.room-page').length), (result) ->
+            result.should.equal 1
+            done()
+
+        it 'the newly created page is active', (done) ->
+          @browser.evaluate (-> $('.room-page').is '.active'), (result) ->
+            result.should.equal true
+            done()
 
   context 'when user is not logged in', ->
     beforeEach (done) ->
       @logout done
 
     it 'redirects to the login page', (done) ->
-      @browser.open "http://localhost:3030", (status) =>
+      @browser.open "#{@host}", (status) =>
         @browser.evaluate (-> window.location.href), (result) ->
           result.should.match /login$/
           done()

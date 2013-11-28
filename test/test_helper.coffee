@@ -3,13 +3,13 @@ global.expect = require('chai').expect
 
 helpers =
   logout: (done) ->
-    @browser.open "http://localhost:3030/logout", -> done()
+    @browser.open "#{@host}/logout", -> done()
 
   login_as: (email, password, done) ->
     @browser.set 'onLoadFinished', _.after 2, =>
       @browser.set 'onLoadFinished', null
       done()
-    @browser.open "http://localhost:3030/login", =>
+    @browser.open "#{@host}/login", =>
       @browser.evaluate ->
         $('#email-input').val "foo@bar.com"
         $('#password-input').val "foo"
@@ -34,6 +34,7 @@ init_test_server = ->
 
   before (done) ->
     @server = new Server "#{__dirname}/..", 'test'
+    @host = "http://localhost:#{@server.config.server.port}"
     @server.start =>
       phantom.create (@phantom) => done()
     for name, helper of helpers
