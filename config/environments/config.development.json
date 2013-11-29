@@ -4,5 +4,9 @@
   },
   "db": {
     "uri": "mongodb://localhost:27017/chatter-development"
+  },
+  "log": {
+    "console": "info",
+    "file"   : "debug"
   }
 }

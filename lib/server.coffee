@@ -1,12 +1,12 @@
 # SERVER
 _          = require 'underscore'
-Logger     = require './logger'
 models     = require '../app/models'
 express    = require 'express'
 glob       = require 'glob'
 http       = require 'http'
 SocketIO   = require 'socket.io'
 mongoose   = require 'mongoose'
+winston    = require 'winston'
 
 class Server
   inited: false
@@ -15,11 +15,16 @@ class Server
     start    : []
     stop     : []
 
-  constructor: (@root, @env) ->
-    @logger = new Logger
+  constructor: (@root, options = {}) ->
     @env   ?= process.env.NODE_ENV ? 'development'
-    @logger.debug "--- ENV: #{@env} ---"
     @load_configuration()
+    @logger = new winston.Logger
+      transports: [
+        new winston.transports.Console level: @config.log.console
+        new winston.transports.File    level: @config.log.file, filename: "log/#{@env}.log"
+      ]
+    @logger.setLevels debug: 0, info: 1, warn: 2, error: 3
+    @logger.debug "--- ENV: #{@env} ---"
     require("#{@root}/config/initializers/") @
 
   init: (done) =>
@@ -39,11 +44,11 @@ class Server
       @logger.debug "Starting ..."
       @init_app()
       @server = http.createServer(@app)
-      @io     = SocketIO.listen @server
+      @io     = SocketIO.listen @server, logger: @logger
       @fire_callbacks 'start'
       @load_controllers()
       @server.listen @config.server.port
-      @logger.debug "Listening on port #{@config.server.port}"
+      @logger.info "Started on port #{@config.server.port}"
       done?()
     else
       @logger.debug "Server not inited. Initing now ..."
@@ -130,11 +135,9 @@ class Server
       "config.local.json",
       "config.json"
     ]
-    @logger.debug "Configuration loaded from: "
     for config_file in config_files
       path = "#{@root}/config/#{config_file}"
       nconf.file config_file, path if fs.existsSync path
-      @logger.debug "\t- #{path}"
     @config = nconf.load()
 
   init_db: (callback) =>

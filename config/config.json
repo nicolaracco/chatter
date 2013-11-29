@@ -4,5 +4,9 @@
   },
   "assets": {
     "compile": false
+  },
+  "log": {
+    "console": "info",
+    "file"   : "info"
   }
 }

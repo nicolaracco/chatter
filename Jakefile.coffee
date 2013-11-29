@@ -5,7 +5,7 @@ namespace 'users', ->
 
   desc 'List all users'
   task 'list', ->
-    server   = new Server __dirname
+    server   = new Server __dirname, debug: false
     server.init ->
       models.User.find (err, users) ->
         server.stop()
@@ -17,7 +17,7 @@ namespace 'users', ->
   desc 'Create a new user. E.g. jake users:create[john@mikamai.com,password]'
   task 'create', (email, password) ->
     if email? and password?
-      server   = new Server __dirname
+      server   = new Server __dirname, debug: false
       server.init ->
         user = new models.User {email, password}
         user.save (err) ->
@@ -32,7 +32,7 @@ namespace 'users', ->
   desc 'Removes a user. E.g. jake users:remove[john@mikamai.com]'
   task 'remove', (email) ->
     if email?
-      server   = new Server __dirname
+      server   = new Server __dirname, debug: false
       server.init ->
         models.User.findOne {email}, (err, user) ->
           throw err if err?

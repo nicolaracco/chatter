@@ -4,7 +4,8 @@ Server  = require '../lib/server'
 
 class Helpers
   constructor: ->
-    @server = new Server "#{__dirname}/..", 'test'
+    process.env.NODE_ENV = 'test'
+    @server = new Server "#{__dirname}/..", debug: false
     @host   = "http://localhost:#{@server.config.server.port}"
 
   init_server: (done) =>
