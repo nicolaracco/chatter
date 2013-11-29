@@ -16,15 +16,15 @@ class Server
     stop     : []
 
   constructor: (@root, options = {}) ->
-    @env   ?= process.env.NODE_ENV ? 'development'
+    @app = express()
     @load_configuration()
     @logger = new winston.Logger
       transports: [
         new winston.transports.Console level: @config.log.console
-        new winston.transports.File    level: @config.log.file, filename: "log/#{@env}.log"
+        new winston.transports.File    level: @config.log.file, filename: "log/#{@app.get 'env'}.log"
       ]
     @logger.setLevels debug: 0, info: 1, warn: 2, error: 3
-    @logger.debug "--- ENV: #{@env} ---"
+    @logger.debug "--- ENV: #{@app.get 'env'} ---"
     require("#{@root}/config/initializers/") @
 
   init: (done) =>
@@ -97,7 +97,6 @@ class Server
       require(controller).setup(@)
 
   init_app: =>
-    @app = express()
     @app.configure =>
       @app.use require('express-partials')()
       @app.use express.cookieParser()
@@ -130,8 +129,8 @@ class Server
     nconf = require 'nconf'
     nconf.argv().env() # load config from ARGV and ENV variables
     config_files = [
-      "environments/config.#{@env}.local.json"
-      "environments/config.#{@env}.json",
+      "environments/config.#{@app.get 'env'}.local.json"
+      "environments/config.#{@app.get 'env'}.json",
       "config.local.json",
       "config.json"
     ]
