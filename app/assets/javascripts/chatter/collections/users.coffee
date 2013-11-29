@@ -1,7 +1,12 @@
 @Chatter ?= {}
 
 class Chatter.Users extends Backbone.Collection
-  model: (attrs, options) -> new Chatter.User attrs, options
+  model: (attrs, options) ->
+    new Chatter.User attrs, parse: true
+
+  initialize: =>
+    super
+    @on 'destroy', (model) => @remove model
 
 class Chatter.UsersView extends Backbone.View
   tagName  : 'ul'

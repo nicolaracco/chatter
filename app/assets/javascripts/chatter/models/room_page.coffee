@@ -19,8 +19,10 @@ class Chatter.RoomPage extends Chatter.Page
         @messages.process_log data
       conn.on "room-#{@id}:joined", (data) =>
         @messages.add data
+        @users.add data
       conn.on "room-#{@id}:left", (data) =>
         @messages.add data
+        @users.get(data.user).destroy()
       conn.emit 'room:join', @id
       conn.on 'reconnect', =>
         conn.emit 'room:join', @id

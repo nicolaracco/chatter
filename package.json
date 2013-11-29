@@ -30,7 +30,9 @@
     "jake"            : "0.7.x",
     "jake-mocha"      : "0.9.x",
     "coffee-backtrace": "0.3.x",
-    "phantom"         : "latest"
+    "phantom"         : "latest",
+    "buster"          : "latest",
+    "buster-coffee"   : "latest"
   },
   "scripts": {
     "test": "jake"

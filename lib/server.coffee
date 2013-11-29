@@ -71,8 +71,12 @@ class Server
   stop_http_server: (done) =>
     if @server?
       @logger.debug "Closing opened connections"
-      s.close() for s in @io.sockets
-      @server.close done
+      for s in @io.sockets
+        s.disconnect()
+        s.close()
+        s.destroy()
+      @io.server.close done
+      @server = null
     else
       done()
 
