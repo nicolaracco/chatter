@@ -5,7 +5,7 @@ buster.spec.expose()
 
 describe 'Room Model', ->
   beforeAll (done) ->
-    helpers.init_server done
+    helpers.init_db done
 
   before (done) ->
     @timeout = 1000 * 10
@@ -46,4 +46,4 @@ describe 'Room Model', ->
       expect(@json.name).toEqual @room.name
 
   afterAll (done) ->
-    helpers.stop_server done
+    helpers.stop_db done

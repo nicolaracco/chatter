@@ -2,20 +2,46 @@ _       = require 'underscore'
 phantom = require 'phantom'
 Server  = require '../lib/server'
 
+class ServersHelpers
+  constructor: ->
+    @callbacks = []
+
+  start: (done) =>
+    @callbacks.start = done
+    @create_test_server()
+    @bind_events()
+
+  stop: (done) =>
+    @callbacks.stop = done
+    @test_server.kill 'SIGKILL'
+
+  # PRIVATE METHODS
+  create_test_server: =>
+    fork = require('child_process').fork
+    @test_server = fork 'app.coffee', [],
+      cwd     : "#{__dirname}/.."
+      execPath: './node_modules/coffee-script/bin/coffee'
+
+  bind_events: =>
+    @test_server.on 'message', @on_server_message
+
+  on_server_message: (data) =>
+    if data.status is 'started'
+      @callbacks.start?()
+    else if data.status is 'stopped'
+      @callbacks.stop?()
+
 class Helpers
   constructor: ->
     process.env.NODE_ENV = 'test'
     @server = new Server "#{__dirname}/..", debug: false
     @host   = "http://localhost:#{@server.config.server.port}"
 
-  init_server: (done) =>
-    @server.init done
+  init_db: (done) =>
+    @server.init_db done
 
-  start_server: (done) =>
-    @server.start done
-
-  stop_server: (done) =>
-    @server.stop done
+  stop_db: (done) =>
+    @server.stop_db done
 
   clear_db: (done) =>
     mongoose = require 'mongoose'
@@ -78,4 +104,5 @@ class Helpers
           @access_room name, page, -> done(null, room)
 
 exports.helpers = new Helpers
+exports.server  = new ServersHelpers
 exports._       = _

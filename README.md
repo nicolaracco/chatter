@@ -71,7 +71,6 @@ Now you can start the server with: `coffee app.coffee`.
 ### Specs
 
 Install buster globally with `npm install -g buster` and run specs with `buster-test`.
-At the moment I think I found [a bug in Socket.IO](https://github.com/LearnBoost/socket.io/issues/1354) that prevents the server to be stopped correctly, so if you try to run all the specs at once they will fail for timeout.
 
 At the moment you have to run each spec individually (e.g. `buster-test "Room Model"`).
 

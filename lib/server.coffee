@@ -49,41 +49,24 @@ class Server
       @load_controllers()
       @server.listen @config.server.port
       @logger.info "Started on port #{@config.server.port}"
+      process.send? status: 'started'
       done?()
     else
       @logger.debug "Server not inited. Initing now ..."
       @init => @start done
 
-  # Callback is called with true if stop is done gracefully
-  # or with false if the server cannot be stopped gracefully
-  # If no callback is given and the server cannot be stopped gracefully
-  # it will exit with code 1
-  stop: (done) =>
-    force_timeout = setTimeout =>
-      @force_quit done
-      done = null # this way it cannot be called by the
-    , 10000
+  # This method should be called for graceful shutdown
+  # but there is an issue in Socket.IO preventing the server to be closed
+  # correctly. So we close only what we can close and we exit
+  stop: =>
     callback = _.after 2, =>
       @fire_callbacks 'stop'
-      @stop_http_server ->
-        clearTimeout force_timeout
-        done?()
+      process.send? status: 'stopped'
+      process.exit() if @server?
     @stop_session_store callback
     @stop_db callback
 
   # PRIVATE METHODS
-
-  stop_http_server: (done) =>
-    if @server?
-      @logger.debug "Closing opened connections"
-      for s in @io.sockets
-        s.disconnect()
-        s.close()
-        s.destroy()
-      @io.server.close done
-      @server = null
-    else
-      done()
 
   force_quit: (done) =>
     @logger.error "Cannot stop the server in time. Forcing quit"

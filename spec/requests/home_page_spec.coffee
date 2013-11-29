@@ -1,14 +1,16 @@
 buster = require('buster')
 buster.spec.expose()
 {expect} = buster
-{helpers, _} = require '../helpers'
+{helpers, _, server} = require '../helpers'
 phantom = require 'phantom'
 
 describe 'Home Page', ->
   beforeAll (done) ->
-    @timeout = 1000 * 10
-    helpers.start_server =>
-      phantom.create (@browser) => done()
+    @timeout = 1000 * 20
+    phantom.create (@browser) =>
+      done = _.after 2, done
+      server.start done
+      helpers.init_db done
 
   before (done) ->
     helpers.clear_db =>
@@ -109,4 +111,6 @@ describe 'Home Page', ->
 
   afterAll (done) ->
     @browser.exit()
-    helpers.stop_server done
+    done = _.after 2, done
+    helpers.stop_db done
+    server.stop done

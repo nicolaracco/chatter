@@ -5,7 +5,7 @@ buster.spec.expose()
 
 describe 'User Model', ->
   beforeAll (done) ->
-    helpers.init_server done
+    helpers.init_db done
 
   before (done) ->
     @timeout = 1000 * 10
@@ -71,4 +71,4 @@ describe 'User Model', ->
           done()
 
   afterAll (done) ->
-    helpers.stop_server done
+    helpers.stop_db done
